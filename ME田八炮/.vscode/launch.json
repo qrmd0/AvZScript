@@ -1,0 +1,26 @@
+{
+    "configurations": [
+        {
+            "name": "(gdb) attach",
+            "type": "cppdbg",
+            "request": "attach",
+            "processId": "${command:AsmVsZombies.getPvzProcessId}",
+            "program": "${command:AsmVsZombies.getPvzExePath}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "c:/Users/13371/Music/PlantsVsZombie/AsmVsZombies/MinGW/bin/gdb32.exe",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "avz"
+        }
+    ]
+}

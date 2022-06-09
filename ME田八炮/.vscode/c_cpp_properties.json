@@ -1,0 +1,11 @@
+{
+    "configurations": [{
+        "name": "Windows",
+        "includePath": [
+            "c:/Users/13371/Music/PlantsVsZombie/AsmVsZombies/inc"
+        ],
+        "cStandard": "c11",
+        "cppStandard": "c++17"
+    }],
+    "version": 4
+}

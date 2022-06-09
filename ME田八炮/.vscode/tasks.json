@@ -1,0 +1,10 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "avz",
+            "command": "${command:AsmVsZombies.runScript}",
+        }
+    ],
+    "version": "2.0.0"
+}
