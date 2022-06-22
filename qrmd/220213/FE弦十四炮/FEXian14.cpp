@@ -2,8 +2,9 @@
  * @Author: qrmd
  * @Date: 2022-06-22 16:45:24
  * @LastEditors: qrmd
- * @LastEditTime: 2022-06-22 20:02:35
+ * @LastEditTime: 2022-06-22 20:18:49
  * @Description:FE弦十四炮 全难度极限出怪运阵演示脚本
+ * 视频演示：https://www.bilibili.com/video/BV1or4y1u7K8/
  * 使用方法：1、前往https://gitee.com/vector-wlc/AsmVsZombies，根据教程下载并安装好AsmVsZombies
  *          2、前往游戏存档文件夹C:/ProgramData/PopCap Games/PlantsVsZombies/userdata，备份原游戏存档，然后用脚本配套的存档文件替换同名文件
  *          3、在Visul Studio Code中打开本脚本，右键点击编辑区空白处，在弹出菜单中选择“AvZ:Run Script”
