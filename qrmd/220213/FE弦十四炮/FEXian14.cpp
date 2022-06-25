@@ -2,7 +2,7 @@
  * @Author: qrmd
  * @Date: 2022-06-22 16:45:24
  * @LastEditors: qrmd
- * @LastEditTime: 2022-06-22 20:18:49
+ * @LastEditTime: 2022-06-25 18:57:58
  * @Description:FE弦十四炮 全难度极限出怪运阵演示脚本
  * 视频演示：https://www.bilibili.com/video/BV1or4y1u7K8/
  * 使用方法：1、前往https://gitee.com/vector-wlc/AsmVsZombies，根据教程下载并安装好AsmVsZombies
@@ -39,53 +39,53 @@ void Script()
     SetTime(147, 1);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 79, 1);
+    SetTime(147 + 134, 1);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 373, 1);
-    pao_operator.pao({{2, 8.8}, {5, 8.8}});
+    pao_operator.pao({{2, 8.4625}, {5, 8.4625}});
     SetTime(869 - 200 + 118 - 373, 1);
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
 
     // wave2 cccc-PPDD
-    SetTime(0, 2);
+    SetTime(-195, 2);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
     SetTime(147, 2);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 79, 2);
+    SetTime(147 + 134, 2);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 2);
     Shovel({{2, 7}, {5, 7}});
     SetTime(869 - 200 - 373, 2);
-    pao_operator.pao({{2, 8.8}, {5, 8.8}});
+    pao_operator.pao({{2, 8.4625}, {5, 8.4625}});
     SetTime(869 - 200 + 118 - 373, 2);
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
 
     // wave3 cccc-PPDD
-    SetTime(0, 3);
+    SetTime(-195, 3);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
     SetTime(147, 3);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 79, 3);
+    SetTime(147 + 134, 3);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 3);
     Shovel({{2, 7}, {5, 7}});
     SetTime(869 - 200 - 373, 3);
-    pao_operator.pao({{2, 8.8}, {5, 8.8}});
+    pao_operator.pao({{2, 8.4625}, {5, 8.4625}});
     SetTime(869 - 200 + 118 - 373, 3);
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
 
     // wave4 cccc-NDD
-    SetTime(0, 4);
+    SetTime(-195, 4);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
     SetTime(147, 4);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 79, 4);
+    SetTime(147 + 134, 4);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 4);
     Shovel({{2, 7}, {5, 7}});
@@ -102,61 +102,61 @@ void Script()
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
 
     // wave5 cccc-PPDD
-    SetTime(0, 5);
+    SetTime(-195, 5);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
     SetTime(147, 5);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 79, 5);
+    SetTime(147 + 134, 5);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 5);
     Shovel({{2, 7}, {5, 7}});
     SetTime(869 - 200 - 373, 5);
-    pao_operator.pao({{2, 8.8}, {5, 8.8}});
+    pao_operator.pao({{2, 8.4625}, {5, 8.4625}});
     SetTime(869 - 200 + 118 - 373, 5);
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
 
     // wave6 cccc-PPDD
-    SetTime(0, 6);
+    SetTime(-195, 6);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
     SetTime(147, 6);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 79, 6);
+    SetTime(147 + 134, 6);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 6);
     Shovel({{2, 7}, {5, 7}});
     SetTime(869 - 200 - 373, 6);
-    pao_operator.pao({{2, 8.8}, {5, 8.8}});
+    pao_operator.pao({{2, 8.4625}, {5, 8.4625}});
     SetTime(869 - 200 + 118 - 373, 6);
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
 
     // wave7 cccc-PPDD
-    SetTime(0, 7);
+    SetTime(-195, 7);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
     SetTime(147, 7);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 79, 7);
+    SetTime(147 + 134, 7);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 7);
     Shovel({{2, 7}, {5, 7}});
     SetTime(869 - 200 - 373, 7);
-    pao_operator.pao({{2, 8.8}, {5, 8.8}});
+    pao_operator.pao({{2, 8.4625}, {5, 8.4625}});
     SetTime(869 - 200 + 118 - 373, 7);
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
 
     // wave8 cccc-NDD
-    SetTime(0, 8);
+    SetTime(-195, 8);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
     SetTime(147, 8);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 79, 8);
+    SetTime(147 + 134, 8);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 8);
     Shovel(5, 7);
@@ -171,18 +171,18 @@ void Script()
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
 
     // wave9 cccc-PPDD-PP-PP-PP
-    SetTime(0, 9);
+    SetTime(-195, 9);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
     SetTime(147, 9);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 79, 9);
+    SetTime(147 + 134, 9);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 9);
     Shovel({{2, 7}, {5, 7}});
     SetTime(869 - 200 - 373, 9);
-    pao_operator.pao({{2, 8.8}, {5, 8.8}});
+    pao_operator.pao({{2, 8.4625}, {5, 8.4625}});
     SetTime(869 - 200 + 118 - 373, 9);
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
     SetTime(0 + 869, 9);
@@ -209,7 +209,7 @@ void Script()
     SetTime(241, 10);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(241 + 79, 10);
+    SetTime(241 + 143, 10);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 373, 10);
     pao_operator.pao({{2, 8.8}, {5, 8.8}});
@@ -217,45 +217,45 @@ void Script()
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
 
     // wave11 cccc-PPDD
-    SetTime(0, 11);
+    SetTime(-195, 11);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
     SetTime(147, 11);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 79, 11);
+    SetTime(147 + 134, 11);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 11);
     Shovel({{2, 7}, {5, 7}});
     SetTime(869 - 200 - 373, 11);
-    pao_operator.pao({{2, 8.8}, {5, 8.8}});
+    pao_operator.pao({{2, 8.4625}, {5, 8.4625}});
     SetTime(869 - 200 + 118 - 373, 11);
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
 
     // wave12 cccc-PPDD
-    SetTime(0, 12);
+    SetTime(-195, 12);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
     SetTime(147, 12);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 79, 12);
+    SetTime(147 + 134, 12);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 12);
     Shovel({{2, 7}, {5, 7}});
     SetTime(869 - 200 - 373, 12);
-    pao_operator.pao({{2, 8.8}, {5, 8.8}});
+    pao_operator.pao({{2, 8.4625}, {5, 8.4625}});
     SetTime(869 - 200 + 118 - 373, 12);
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
 
     // wave13 cccc-NDD
-    SetTime(0, 13);
+    SetTime(-195, 13);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
     SetTime(147, 13);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 79, 13);
+    SetTime(147 + 134, 13);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 13);
     Shovel({{2, 7}, {5, 7}});
@@ -272,61 +272,61 @@ void Script()
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
 
     // wave14 cccc-PPDD
-    SetTime(0, 14);
+    SetTime(-195, 14);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
     SetTime(147, 14);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 79, 14);
+    SetTime(147 + 134, 14);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 14);
     Shovel({{2, 7}, {5, 7}});
     SetTime(869 - 200 - 373, 14);
-    pao_operator.pao({{2, 8.8}, {5, 8.8}});
+    pao_operator.pao({{2, 8.4625}, {5, 8.4625}});
     SetTime(869 - 200 + 118 - 373, 14);
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
 
     // wave15 cccc-PPDD
-    SetTime(0, 15);
+    SetTime(-195, 15);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
     SetTime(147, 15);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 79, 15);
+    SetTime(147 + 134, 15);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 15);
     Shovel({{2, 7}, {5, 7}});
     SetTime(869 - 200 - 373, 15);
-    pao_operator.pao({{2, 8.8}, {5, 8.8}});
+    pao_operator.pao({{2, 8.4625}, {5, 8.4625}});
     SetTime(869 - 200 + 118 - 373, 15);
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
 
     // wave16 cccc-PPDD
-    SetTime(0, 16);
+    SetTime(-195, 16);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
     SetTime(147, 16);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 79, 16);
+    SetTime(147 + 134, 16);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 16);
     Shovel({{2, 7}, {5, 7}});
     SetTime(869 - 200 - 373, 16);
-    pao_operator.pao({{2, 8.8}, {5, 8.8}});
+    pao_operator.pao({{2, 8.4625}, {5, 8.4625}});
     SetTime(869 - 200 + 118 - 373, 16);
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
 
     // wave17 cccc-NDD
-    SetTime(0, 17);
+    SetTime(-195, 17);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
     SetTime(147, 17);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 79, 17);
+    SetTime(147 + 134, 17);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 17);
     Shovel(2, 7);
@@ -341,34 +341,34 @@ void Script()
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
 
     // wave18 cccc-PPDD
-    SetTime(0, 18);
+    SetTime(-195, 18);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
     SetTime(147, 18);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 79, 18);
+    SetTime(147 + 134, 18);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 18);
     Shovel({{2, 7}, {5, 7}});
     SetTime(869 - 200 - 373, 18);
-    pao_operator.pao({{2, 8.8}, {5, 8.8}});
+    pao_operator.pao({{2, 8.4625}, {5, 8.4625}});
     SetTime(869 - 200 + 118 - 373, 18);
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
 
     // wave19 cccc-PPDD
-    SetTime(0, 19);
+    SetTime(-195, 19);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
     SetTime(147, 19);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 79, 19);
+    SetTime(147 + 134, 19);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 19);
     Shovel({{2, 7}, {5, 7}});
     SetTime(869 - 200 - 373, 19);
-    pao_operator.pao({{2, 8.8}, {5, 8.8}});
+    pao_operator.pao({{2, 8.4625}, {5, 8.4625}});
     SetTime(869 - 200 + 118 - 373, 19);
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
     SetTime(0 + 869, 19);
@@ -394,10 +394,10 @@ void Script()
     SetTime(241, 20);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(241 + 79, 20);
+    SetTime(241 + 143, 20);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 373, 20);
-    pao_operator.pao({{2, 8.8}, {5, 8.8}});
+    pao_operator.pao({{2, 8.4625}, {5, 8.4625}});
     SetTime(869 - 200 + 118 - 373, 20);
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
     SetTime(1700 - 373, 20);
