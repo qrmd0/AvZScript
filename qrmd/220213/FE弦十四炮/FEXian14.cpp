@@ -2,7 +2,7 @@
  * @Author: qrmd
  * @Date: 2022-06-22 16:45:24
  * @LastEditors: qrmd
- * @LastEditTime: 2022-06-25 18:57:58
+ * @LastEditTime: 2022-06-26 16:23:55
  * @Description:FE弦十四炮 全难度极限出怪运阵演示脚本
  * 视频演示：https://www.bilibili.com/video/BV1or4y1u7K8/
  * 使用方法：1、前往https://gitee.com/vector-wlc/AsmVsZombies，根据教程下载并安装好AsmVsZombies
@@ -30,16 +30,16 @@ void Script()
     SelectCards({DOOM_SHROOM, M_DOOM_SHROOM, LILY_PAD, CHERRY_BOMB, JALAPENO, PUFF_SHROOM, FLOWER_POT, SCAREDY_SHROOM, SUN_SHROOM, PUMPKIN});
     SetTime(-599, 1);
     // 填充炮列表
-    pao_operator.resetPaoList({{1, 2}, {6, 2}, {1, 4}, {6, 4}, {2, 3}, {5, 3}, {2, 5}, {5, 5}, {3, 1}, {4, 1}, {3, 3}, {4, 3}, {3, 5}, {4, 5}});
+    pao_operator.resetPaoList({{1, 2}, {6, 2}, {1, 4}, {6, 4}, {2, 3}, {5, 3}, {2, 5}, {5, 5}, {3, 2}, {4, 2}, {3, 4}, {4, 4}, {3, 6}, {4, 6}});
     // 铲除临时植物
     Shovel({{1, 6}, {6, 6}, {2, 7}, {5, 7}, {2, 9}, {5, 9}});
     // 主体节奏 P4-N cccc-PPDD|cccc-PPDD|cccc-PPDD|cccc-NDD 869|869|869|869 每波执行确定的操作，不考虑非旗帜波的刷新延迟
 
     // wave1 cccc-PPDD
-    SetTime(147, 1);
+    SetTime(199, 1);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 134, 1);
+    SetTime(199 + 134, 1);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 373, 1);
     pao_operator.pao({{2, 8.4625}, {5, 8.4625}});
@@ -50,10 +50,10 @@ void Script()
     SetTime(-195, 2);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
-    SetTime(147, 2);
+    SetTime(199, 2);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 134, 2);
+    SetTime(199 + 134, 2);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 2);
     Shovel({{2, 7}, {5, 7}});
@@ -66,10 +66,10 @@ void Script()
     SetTime(-195, 3);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
-    SetTime(147, 3);
+    SetTime(199, 3);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 134, 3);
+    SetTime(199 + 134, 3);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 3);
     Shovel({{2, 7}, {5, 7}});
@@ -82,10 +82,10 @@ void Script()
     SetTime(-195, 4);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
-    SetTime(147, 4);
+    SetTime(199, 4);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 134, 4);
+    SetTime(199 + 134, 4);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 4);
     Shovel({{2, 7}, {5, 7}});
@@ -105,10 +105,10 @@ void Script()
     SetTime(-195, 5);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
-    SetTime(147, 5);
+    SetTime(199, 5);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 134, 5);
+    SetTime(199 + 134, 5);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 5);
     Shovel({{2, 7}, {5, 7}});
@@ -121,10 +121,10 @@ void Script()
     SetTime(-195, 6);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
-    SetTime(147, 6);
+    SetTime(199, 6);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 134, 6);
+    SetTime(199 + 134, 6);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 6);
     Shovel({{2, 7}, {5, 7}});
@@ -137,10 +137,10 @@ void Script()
     SetTime(-195, 7);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
-    SetTime(147, 7);
+    SetTime(199, 7);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 134, 7);
+    SetTime(199 + 134, 7);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 7);
     Shovel({{2, 7}, {5, 7}});
@@ -153,10 +153,10 @@ void Script()
     SetTime(-195, 8);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
-    SetTime(147, 8);
+    SetTime(199, 8);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 134, 8);
+    SetTime(199 + 134, 8);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 8);
     Shovel(5, 7);
@@ -174,10 +174,10 @@ void Script()
     SetTime(-195, 9);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
-    SetTime(147, 9);
+    SetTime(199, 9);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 134, 9);
+    SetTime(199 + 134, 9);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 9);
     Shovel({{2, 7}, {5, 7}});
@@ -209,7 +209,7 @@ void Script()
     SetTime(241, 10);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(241 + 143, 10);
+    SetTime(241 + 134, 10);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 373, 10);
     pao_operator.pao({{2, 8.8}, {5, 8.8}});
@@ -220,10 +220,10 @@ void Script()
     SetTime(-195, 11);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
-    SetTime(147, 11);
+    SetTime(199, 11);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 134, 11);
+    SetTime(199 + 134, 11);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 11);
     Shovel({{2, 7}, {5, 7}});
@@ -236,10 +236,10 @@ void Script()
     SetTime(-195, 12);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
-    SetTime(147, 12);
+    SetTime(199, 12);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 134, 12);
+    SetTime(199 + 134, 12);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 12);
     Shovel({{2, 7}, {5, 7}});
@@ -252,10 +252,10 @@ void Script()
     SetTime(-195, 13);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
-    SetTime(147, 13);
+    SetTime(199, 13);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 134, 13);
+    SetTime(199 + 134, 13);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 13);
     Shovel({{2, 7}, {5, 7}});
@@ -275,10 +275,10 @@ void Script()
     SetTime(-195, 14);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
-    SetTime(147, 14);
+    SetTime(199, 14);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 134, 14);
+    SetTime(199 + 134, 14);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 14);
     Shovel({{2, 7}, {5, 7}});
@@ -291,10 +291,10 @@ void Script()
     SetTime(-195, 15);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
-    SetTime(147, 15);
+    SetTime(199, 15);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 134, 15);
+    SetTime(199 + 134, 15);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 15);
     Shovel({{2, 7}, {5, 7}});
@@ -307,10 +307,10 @@ void Script()
     SetTime(-195, 16);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
-    SetTime(147, 16);
+    SetTime(199, 16);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 134, 16);
+    SetTime(199 + 134, 16);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 16);
     Shovel({{2, 7}, {5, 7}});
@@ -323,10 +323,10 @@ void Script()
     SetTime(-195, 17);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
-    SetTime(147, 17);
+    SetTime(199, 17);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 134, 17);
+    SetTime(199 + 134, 17);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 17);
     Shovel(2, 7);
@@ -344,10 +344,10 @@ void Script()
     SetTime(-195, 18);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
-    SetTime(147, 18);
+    SetTime(199, 18);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 134, 18);
+    SetTime(199 + 134, 18);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 18);
     Shovel({{2, 7}, {5, 7}});
@@ -360,10 +360,10 @@ void Script()
     SetTime(-195, 19);
     Card(PUFF_SHROOM, 2, 7);
     Card(SUN_SHROOM, 5, 7);
-    SetTime(147, 19);
+    SetTime(199, 19);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(147 + 134, 19);
+    SetTime(199 + 134, 19);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 209, 19);
     Shovel({{2, 7}, {5, 7}});
@@ -394,7 +394,7 @@ void Script()
     SetTime(241, 20);
     Card(FLOWER_POT, 2, 9);
     Card(SCAREDY_SHROOM, 5, 9);
-    SetTime(241 + 143, 20);
+    SetTime(241 + 134, 20);
     Shovel({{2, 9}, {5, 9}});
     SetTime(869 - 200 - 373, 20);
     pao_operator.pao({{2, 8.4625}, {5, 8.4625}});
