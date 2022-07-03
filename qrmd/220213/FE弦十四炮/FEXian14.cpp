@@ -2,7 +2,7 @@
  * @Author: qrmd
  * @Date: 2022-06-22 16:45:24
  * @LastEditors: qrmd
- * @LastEditTime: 2022-06-26 16:23:55
+ * @LastEditTime: 2022-07-03 14:12:52
  * @Description:FE弦十四炮 全难度极限出怪运阵演示脚本
  * 视频演示：https://www.bilibili.com/video/BV1or4y1u7K8/
  * 使用方法：1、前往https://gitee.com/vector-wlc/AsmVsZombies，根据教程下载并安装好AsmVsZombies
@@ -97,7 +97,8 @@ void Script()
     Shovel(3, 8);
     SetTime(869 - 200 - 100, 4);
     Card(LILY_PAD, 3, 9);
-    Card(DOOM_SHROOM, 3, 9);
+    Card(PUMPKIN, 3, 9);
+    Card(M_DOOM_SHROOM, 3, 9);
     SetTime(869 - 200 + 117 - 373, 4);
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
 
@@ -165,8 +166,7 @@ void Script()
     Card(JALAPENO, 2, 7);
     SetTime(869 - 200 - 419, 8);
     Card(LILY_PAD, 3, 8);
-    Card(PUMPKIN, 3, 8);
-    Card(M_DOOM_SHROOM, 3, 8);
+    Card(DOOM_SHROOM, 3, 8);
     SetTime(869 - 200 + 118 - 373, 8);
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
 
@@ -267,7 +267,8 @@ void Script()
     Shovel(4, 8);
     SetTime(869 - 200 - 100, 13);
     Card(LILY_PAD, 4, 9);
-    Card(DOOM_SHROOM, 4, 9);
+    Card(PUMPKIN, 4, 9);
+    Card(M_DOOM_SHROOM, 4, 9);
     SetTime(869 - 200 + 117 - 373, 13);
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
 
@@ -335,8 +336,7 @@ void Script()
     Card(JALAPENO, 5, 7);
     SetTime(869 - 200 - 419, 17);
     Card(LILY_PAD, 4, 8);
-    Card(PUMPKIN, 4, 8);
-    Card(M_DOOM_SHROOM, 4, 8);
+    Card(DOOM_SHROOM, 4, 8);
     SetTime(869 - 200 + 118 - 373, 17);
     pao_operator.pao({{1, 7.1125}, {5, 7.1125}});
 
