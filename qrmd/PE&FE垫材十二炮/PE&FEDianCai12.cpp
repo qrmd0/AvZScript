@@ -2,12 +2,12 @@
  * @Author: qrmd
  * @Date: 2022-04-20 20:34:07
  * @LastEditors: qrmd
- * @LastEditTime: 2022-07-13 16:40:27
+ * @LastEditTime: 2022-07-14 10:50:38
  * @Description:PE&FE垫材十二炮 挂机冲关脚本
  * 使用方法：1、前往https:// gitee.com/std::vector-wlc/AsmVsZombies，根据教程下载并安装好AsmVsZombies
  *          2、前往游戏存档文件夹C:/ProgramData/PopCap Games/PlantsVsZombies/userdata，备份原游戏存档，然后用脚本配套的存档文件替换同名文件
  *          3、在Visul Studio Code中打开本脚本，右键点击编辑区空白处，在弹出菜单中选择“AvZ:Run Script”
- *          4、脚本支持游戏倍速和跳帧功能，分别删除第46行和第44行的注释符“//”并保存，可使相应功能在下一次运行脚本时生效
+ *          4、脚本支持游戏倍速和跳帧功能，分别删除第45行和第43行的注释符“//”并保存，可使相应功能在下一次运行脚本时生效
  * 来自AvZScript公开脚本仓库：
  * 主库：https://github.com/qrmd0/AvZScript
  * 镜像库：https://gitee.com/qrmd/AvZScript
@@ -31,7 +31,7 @@ bool GetIsExistGIGA(int wave);
 
 // *** In Queue
 // 在{pos}位置存在[wave]波刷出的红眼巨人僵尸时，在此位置放置临时植物并在{time}厘秒后铲除，优先选择阳光消耗低的植物
-void PlantFodders(std::vector<Grid> pos, int wave, int time);
+void BlockGigas(std::vector<Grid> pos, int wave, int time);
 
 // *** In Queue
 // 跳帧运行，阵型受损时停止
@@ -47,8 +47,8 @@ void Script()
     // SetErrorMode(CONSOLE);
     // 脚本循环生效，按'Q'键停止
     OpenMultipleEffective('Q', AvZ::MAIN_UI_OR_FIGHT_UI);
-    // 选择植物：{小喷菇、模仿小喷菇、花盆、胆小菇、阳光菇、向日葵、樱桃炸弹、机枪射手、双子向日葵、忧郁菇}
-    SelectCards({PUFF_SHROOM, M_PUFF_SHROOM, FLOWER_POT, SCAREDY_SHROOM, SUN_SHROOM, SUNFLOWER, CHERRY_BOMB, GATLING_PEA, TWIN_SUNFLOWER, GLOOM_SHROOM});
+    // 选择植物：{小喷菇、模仿小喷菇、花盆、胆小菇、阳光菇、向日葵、樱桃炸弹、三叶草、双子向日葵、忧郁菇}
+    SelectCards({PUFF_SHROOM, M_PUFF_SHROOM, FLOWER_POT, SCAREDY_SHROOM, SUN_SHROOM, SUNFLOWER, CHERRY_BOMB, BLOVER, TWIN_SUNFLOWER, GLOOM_SHROOM});
     // 本轮是否会刷出红眼巨人僵尸
     bool is_exist_GIGA_GARGANTUAR = GetZombieTypeList()[GIGA_GARGANTUAR];
 
@@ -76,14 +76,14 @@ void Script()
         if (is_exist_GIGA_GARGANTUAR) {
             if (wave % 2 == 0) {
                 SetTime(777, wave);
-                PlantFodders({{1, 9}, {2, 9}}, wave, 1);
+                BlockGigas({{1, 9}, {2, 9}}, wave, 1);
                 SetTime(601 + 338 + 142, wave);
-                PlantFodders({{5, 9}, {6, 9}}, wave, 134);
+                BlockGigas({{5, 9}, {6, 9}}, wave, 134);
             } else {
                 SetTime(777, wave);
-                PlantFodders({{5, 9}, {6, 9}}, wave, 1);
+                BlockGigas({{5, 9}, {6, 9}}, wave, 1);
                 SetTime(601 + 338 + 142, wave);
-                PlantFodders({{1, 9}, {2, 9}}, wave, 134);
+                BlockGigas({{1, 9}, {2, 9}}, wave, 134);
             }
         }
         // 收尾
@@ -97,18 +97,22 @@ void Script()
             });
             if (is_exist_GIGA_GARGANTUAR) {
                 // PP'生效后，前场可能且仅可能存在红眼巨人僵尸
-                InsertTimeOperation(341 + 601 + 1, wave, [=]() {
+                InsertTimeOperation(601 + 341 + 1, wave, [=]() {
                     // 如果存在本波刷出的红眼巨人僵尸，执行PP''-PP'''
                     if (GetIsExistGIGA(wave)) {
                         SetTime(601 * 2 + 341 - 376, wave);
                         pao_operator.pao({{2, 8.8}, {5, 8.8}});
                         SetTime(601 * 3 + 341 - 376, wave);
                         pao_operator.pao({{2, 8.8}, {5, 8.8}});
-                    } else {
-                        // 否则如果存在上波刷出的红眼巨人僵尸，执行cccc
-                        if (GetIsExistGIGA(wave - 1)) {
-                            SetTime(1735, wave - 1);
-                            PlantFodders({{1, 8}, {2, 8}, {5, 8}, {6, 8}}, wave - 1, 1);
+                        // 否则如果存在上波刷出的红眼巨人僵尸
+                    } else if (GetIsExistGIGA(wave - 1)) {
+                        // 如果未刷新红字，执行PP''
+                        if (GetRunningWave() == wave) {
+                            SetTime(601 * 2 + 341 - 376, wave);
+                            pao_operator.pao({{2, 8.8}, {5, 8.8}});
+                        } else { // 否则执行cccc
+                            SetTime(1611, wave - 1);
+                            BlockGigas({{1, 8}, {2, 8}, {5, 8}, {6, 8}}, wave - 1, 134);
                         }
                     }
                 });
@@ -155,7 +159,7 @@ bool GetIsExistGIGA(int wave)
     }
     return false;
 }
-void PlantFodders(std::vector<Grid> pos, int wave, int time)
+void BlockGigas(std::vector<Grid> pos, int wave, int time)
 {
     InsertOperation([=]() {
         const std::vector<PlantType> seed_list = {PUFF_SHROOM, M_PUFF_SHROOM, FLOWER_POT, SCAREDY_SHROOM, SUN_SHROOM, SUNFLOWER};
@@ -163,7 +167,7 @@ void PlantFodders(std::vector<Grid> pos, int wave, int time)
         auto seeds = GetMainObject()->seedArray();
         for (auto each_pos : pos) {
             for (int index = 0; index < GetMainObject()->zombieTotal(); ++index) {
-                if (zombies[index].type() == GIGA_GARGANTUAR && zombies[index].existTime() == NowTime(wave) && zombies[index].row() + 1 == each_pos.row && (zombies[index].abscissa() >= each_pos.col * 80.0 - 69.0 && zombies[index].abscissa() < each_pos.col * 80.0 + 41.0) && !zombies[index].isDead() && !zombies[index].isDisappeared()) {
+                if (zombies[index].type() == GIGA_GARGANTUAR && zombies[index].existTime() == NowTime(wave) && zombies[index].row() + 1 == each_pos.row && zombies[index].abscissa() >= each_pos.col * 80.0 - 69.0 && !zombies[index].isDead() && !zombies[index].isDisappeared()) {
                     for (PlantType each_seed : seed_list) {
                         int seed_index = each_seed > IMITATOR ? GetSeedIndex(each_seed - IMITATOR - 1, true) : GetSeedIndex(each_seed);
                         if (seeds[seed_index].isUsable()) {
