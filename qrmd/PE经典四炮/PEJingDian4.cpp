@@ -2,7 +2,7 @@
  * @Author: qrmd
  * @Date: 2022-08-02 13:56:29
  * @LastEditors: qrmd
- * @LastEditTime: 2022-08-03 15:59:43
+ * @LastEditTime: 2022-08-03 16:12:32
  * @Description:PE经典四炮 挂机冲关脚本
  * 使用方法：1、前往https://gitee.com/vector-wlc/AsmVsZombies，根据教程下载并安装好AsmVsZombies
  *          2、前往游戏存档文件夹C:/ProgramData/PopCap Games/PlantsVsZombies/userdata，备份原游戏存档，然后用脚本配套的存档文件替换同名文件
@@ -67,9 +67,9 @@ void SkipTickToDamaged();
 void Script()
 {
     // 跳帧运行，阵型受损时停止
-    // SkipTickToDamaged();
+    SkipTickToDamaged();
     // 游戏倍速
-    // SetGameSpeed(10);
+    SetGameSpeed(10);
 
     // 脚本在游戏主界面和选择植物界面生效，按Q键结束运行
     OpenMultipleEffective('Q', MAIN_UI_OR_FIGHT_UI);
