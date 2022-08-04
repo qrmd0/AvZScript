@@ -2,19 +2,18 @@
  * @Author: qrmd
  * @Date: 2022-08-02 13:56:29
  * @LastEditors: qrmd
- * @LastEditTime: 2022-08-04 17:51:18
+ * @LastEditTime: 2022-08-05 00:12:58
  * @Description:PE经典四炮 挂机冲关脚本
  * 使用方法：1、前往https://gitee.com/vector-wlc/AsmVsZombies，根据教程下载并安装好AsmVsZombies
  *          2、前往游戏存档文件夹C:/ProgramData/PopCap Games/PlantsVsZombies/userdata，备份原游戏存档，然后用脚本配套的存档文件替换同名文件
  *          3、在Visul Studio Code中打开本脚本，右键点击编辑区空白处，在弹出菜单中选择“AvZ:Run Script”
- *          4、脚本支持游戏倍速和跳帧功能，分别删除第72行和第70行的注释符“//”并保存，可使相应功能在下一次运行脚本时生效
+ *          4、脚本支持游戏倍速和跳帧功能，分别删除第74行和第76行的注释符“//”并保存，可使相应功能在下一次运行脚本时生效
  * 来自AvZScript公开脚本仓库：
  * 主库：https://github.com/qrmd0/AvZScript
  * 镜像库：https://gitee.com/qrmd/AvZScript
  * Copyright (c) 2022 by qrmd, All Rights Reserved.
  */
 
-// #include "SetZombiesPlus.h"
 #include "avz.h"
 
 using namespace AvZ;
@@ -71,19 +70,15 @@ void SkipTickToDamaged();
 
 void Script()
 {
-    // SkipTick(-199, 9);
-    // SkipTick(-199, 20);
     // 游戏倍速
     // SetGameSpeed(10);
     // 跳帧运行，阵型受损时停止
-    // SkipTickToDamaged();
+    SkipTickToDamaged();
 
     // SetErrorMode(CONSOLE);
 
     // 脚本在游戏主界面和选择植物界面生效，按F12键结束运行
     OpenMultipleEffective(VK_F12, MAIN_UI_OR_FIGHT_UI);
-
-    // SetZombiesPlus({ZOMBIE, CONEHEAD_ZOMBIE, BUCKETHEAD_ZOMBIE, POLE_VAULTING_ZOMBIE, FOOTBALL_ZOMBIE, ZOMBONI, JACK_IN_THE_BOX_ZOMBIE, POGO_ZOMBIE, BUNGEE_ZOMBIE, LADDER_ZOMBIE, BALLOON_ZOMBIE, SNORKEL_ZOMBIE}, INTERNAL);
 
     // 选择植物：咖啡豆、寒冰菇、模仿寒冰菇、睡莲叶、毁灭菇、南瓜头、倭瓜、三叶草、阳光菇、向日葵
     std::vector<int> card_list = {COFFEE_BEAN, ICE_SHROOM, M_ICE_SHROOM, LILY_PAD, DOOM_SHROOM, PUMPKIN, SQUASH, BLOVER, SUN_SHROOM, SUNFLOWER};
@@ -357,7 +352,7 @@ void ExistGiga()
 
     // wave2 PP 首代
     SetTime(729 - 373, 2);
-    pao_operator.pao({{2, 8.6125}, {5, 8.6125}});
+    pao_operator.recoverPao({{2, 8.6125}, {5, 8.6125}});
 
     // wave3, 4, 5, 6, 7, 8, 9, 12, 13, 14, 15, 16, 17, 18, 19 I-PP
     for (int wave : {3, 4, 5, 6, 7, 8, 9, 12, 13, 14, 15, 16, 17, 18, 19}) {
@@ -373,7 +368,7 @@ void ExistGiga()
 
     // wave11 PP 首代
     SetTime(729 - 373, 11);
-    pao_operator.pao({{2, 8.6125}, {5, 8.6125}});
+    pao_operator.recoverPao({{2, 8.6125}, {5, 8.6125}});
 
     // wave20 N
     SetTime(-600, 20);
@@ -390,13 +385,13 @@ void ExistGiga()
     InsertTimeOperation(900 + 1738 - 200 + 3, 20, [=]() {
         SetTime(4258 - 373);
         if (IsExistZombieFromWave(20, GIGA_GARGANTUAR, 1))
-            pao_operator.pao({{3, 8}, {5, 8}});
+            pao_operator.recoverPao({{3, 8}, {5, 8}});
         else if (IsExistZombieFromWave(20, GIGA_GARGANTUAR, 6))
-            pao_operator.pao({{2, 8}, {4, 8}});
+            pao_operator.recoverPao({{2, 8}, {4, 8}});
         else if (IsExistZombieFromWave(20, GIGA_GARGANTUAR, 2))
-            pao_operator.pao(5, 8);
+            pao_operator.recoverPao(5, 8);
         else if (IsExistZombieFromWave(20, GIGA_GARGANTUAR, 5))
-            pao_operator.pao(2, 8);
+            pao_operator.recoverPao(2, 8);
     });
 }
 void NotExistGiga()
@@ -410,12 +405,12 @@ void NotExistGiga()
     // 主体节奏 C7i I-PP|I-PP|I-N|PP 1738|1738|1152|685
     // wave1 PP
     SetTime(638 - 373, 1);
-    pao_operator.pao({{2, 8.5375}, {5, 8.5375}});
+    pao_operator.recoverPao({{2, 8.5375}, {5, 8.5375}});
 
     // wave5, 14, 18 PP
     for (int wave : {5, 14, 18}) {
         SetTime(685 - 200 - 373, wave);
-        pao_operator.pao({{2, 8.7625}, {5, 8.7625}});
+        pao_operator.recoverPao({{2, 8.7625}, {5, 8.7625}});
     }
 
     // wave2, 3, 6, 7, 12, 15, 16 I-PP
@@ -423,14 +418,14 @@ void NotExistGiga()
         SetTime(-200, wave);
         ice_filler.coffee();
         SetTime(1738 - 200 - 373, wave);
-        pao_operator.pao({{2, 8.7625}, {5, 8.7625}});
+        pao_operator.recoverPao({{2, 8.7625}, {5, 8.7625}});
     }
 
     // wave11 I-PP
     SetTime(-200, 11);
     ice_filler.coffee();
     SetTime(1754 - 200 - 373, 11);
-    pao_operator.pao({{2, 8.7625}, {5, 8.7625}});
+    pao_operator.recoverPao({{2, 8.7625}, {5, 8.7625}});
 
     // wave4, 8, 13, 17 I-N
     for (int wave : {4, 8, 13, 17}) {
@@ -444,16 +439,16 @@ void NotExistGiga()
     InsertTimeOperation(706 - 200 - 373, 9, [=]() {
         SetTime(706 - 200 - 373, 9);
         if (IsExistZombieFromWave(9, GARGANTUAR, -1)) {
-            pao_operator.pao({{2, 8.7625}, {5, 8.7625}});
+            pao_operator.recoverPao({{2, 8.7625}, {5, 8.7625}});
         } else {
             if (IsExistZombieFromWave(9, -1, 3)) {
-                pao_operator.pao({{1, 8.7625}, {5, 8.7625}});
+                pao_operator.recoverPao({{1, 8.7625}, {5, 8.7625}});
                 WaitPlantSquash(700, 9, 3, 6, {CONEHEAD_ZOMBIE, BUCKETHEAD_ZOMBIE, SNORKEL_ZOMBIE});
             } else if (IsExistZombieFromWave(9, -1, 4)) {
-                pao_operator.pao({{2, 8.7625}, {6, 8.7625}});
+                pao_operator.recoverPao({{2, 8.7625}, {6, 8.7625}});
                 WaitPlantSquash(700, 9, 4, 6, {CONEHEAD_ZOMBIE, BUCKETHEAD_ZOMBIE, SNORKEL_ZOMBIE});
             } else {
-                pao_operator.pao({{2, 8.7625}, {5, 8.7625}});
+                pao_operator.recoverPao({{2, 8.7625}, {5, 8.7625}});
             }
         }
     });
@@ -464,56 +459,56 @@ void NotExistGiga()
     InsertTimeOperation(1754 - 200 - 373, 19, [=]() {
         SetTime(1754 - 200 - 373, 19);
         if (IsExistZombieFromWave(19, GARGANTUAR, -1)) {
-            pao_operator.pao({{2, 8.7625}, {5, 8.7625}});
+            pao_operator.recoverPao({{2, 8.7625}, {5, 8.7625}});
         } else {
             if (IsExistZombieFromWave(19, -1, 3)) {
-                pao_operator.pao({{1, 8.7625}, {5, 8.7625}});
+                pao_operator.recoverPao({{1, 8.7625}, {5, 8.7625}});
                 Card(LILY_PAD, 3, 7);
                 WaitPlantSquash(1754 - 200 - 373, 19, 3, 6, {CONEHEAD_ZOMBIE, BUCKETHEAD_ZOMBIE, SNORKEL_ZOMBIE});
             } else if (IsExistZombieFromWave(19, -1, 4)) {
-                pao_operator.pao({{2, 8.7625}, {6, 8.7625}});
+                pao_operator.recoverPao({{2, 8.7625}, {6, 8.7625}});
                 Card(LILY_PAD, 4, 7);
                 WaitPlantSquash(1754 - 200 - 373, 19, 4, 6, {CONEHEAD_ZOMBIE, BUCKETHEAD_ZOMBIE, SNORKEL_ZOMBIE});
             } else {
-                pao_operator.pao({{2, 8.7625}, {5, 8.7625}});
+                pao_operator.recoverPao({{2, 8.7625}, {5, 8.7625}});
             }
         }
     });
 
     // wave10 PP
     SetTime(776 - 373, 10);
-    pao_operator.pao({{2, 8.45}, {5, 8.45}});
+    pao_operator.recoverPao({{2, 8.45}, {5, 8.45}});
 
     // wave20 PP和收尾操作
     InsertTimeOperation(0, 20, [=]() {
         if (IsExistZombieFromWave(20, GARGANTUAR, -1)) {
             SetTime(776 - 373, 20);
-            pao_operator.pao({{2, 8.45}, {5, 8.45}});
+            pao_operator.recoverPao({{2, 8.45}, {5, 8.45}});
             if (IsExistZombieFromWave(20, GARGANTUAR, 1)) {
                 SetTime(2500 + 776 - 373, 20);
-                pao_operator.pao({{3, 8}, {5, 8}});
+                pao_operator.recoverPao({{3, 8}, {5, 8}});
             } else if (IsExistZombieFromWave(20, GARGANTUAR, 6)) {
                 SetTime(2500 + 776 - 373, 20);
-                pao_operator.pao({{2, 8}, {4, 8}});
+                pao_operator.recoverPao({{2, 8}, {4, 8}});
             } else if (IsExistZombieFromWave(20, GARGANTUAR, 2)) {
                 SetTime(2500 + 776 - 373, 20);
-                pao_operator.pao(5, 8);
+                pao_operator.recoverPao(5, 8);
             } else if (IsExistZombieFromWave(20, GARGANTUAR, 5)) {
                 SetTime(2500 + 776 - 373, 20);
-                pao_operator.pao(2, 8);
+                pao_operator.recoverPao(2, 8);
             }
         } else {
             SetTime(776 - 373, 20);
             if (IsExistZombieFromWave(20, -1, 3)) {
-                pao_operator.pao({{1, 8.45}, {5, 8.45}});
+                pao_operator.recoverPao({{1, 8.45}, {5, 8.45}});
                 Card(LILY_PAD, 3, 7);
                 WaitPlantSquash(776 - 373, 20, 3, 6, {CONEHEAD_ZOMBIE, BUCKETHEAD_ZOMBIE, SNORKEL_ZOMBIE});
             } else if (IsExistZombieFromWave(20, -1, 4)) {
-                pao_operator.pao({{2, 8.45}, {6, 8.45}});
+                pao_operator.recoverPao({{2, 8.45}, {6, 8.45}});
                 Card(LILY_PAD, 4, 7);
                 WaitPlantSquash(776 - 373, 20, 4, 6, {CONEHEAD_ZOMBIE, BUCKETHEAD_ZOMBIE, SNORKEL_ZOMBIE});
             } else {
-                pao_operator.pao({{2, 8.45}, {5, 8.45}});
+                pao_operator.recoverPao({{2, 8.45}, {5, 8.45}});
             }
         }
     });
