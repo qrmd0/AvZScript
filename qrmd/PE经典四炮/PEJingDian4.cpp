@@ -2,7 +2,7 @@
  * @Author: qrmd
  * @Date: 2022-08-02 13:56:29
  * @LastEditors: qrmd
- * @LastEditTime: 2022-08-03 16:12:32
+ * @LastEditTime: 2022-08-04 17:51:18
  * @Description:PE经典四炮 挂机冲关脚本
  * 使用方法：1、前往https://gitee.com/vector-wlc/AsmVsZombies，根据教程下载并安装好AsmVsZombies
  *          2、前往游戏存档文件夹C:/ProgramData/PopCap Games/PlantsVsZombies/userdata，备份原游戏存档，然后用脚本配套的存档文件替换同名文件
@@ -14,12 +14,13 @@
  * Copyright (c) 2022 by qrmd, All Rights Reserved.
  */
 
+// #include "SetZombiesPlus.h"
 #include "avz.h"
 
 using namespace AvZ;
 // *** Not In Queue
 // 在位置列表[pos_list]存在巨人僵尸或橄榄僵尸时放置[types]中的植物以拖延其前进，附近存在持杆的撑杆僵尸时自动铲除。结合TickRunner使用。
-void AutoBlock(std::vector<PlantType> types, std::vector<Grid> pos_list);
+void AutoBlock(std::vector<PlantType> types, std::vector<Grid> grid_list);
 TickRunner auto_blocker;
 
 // *** Not In Queue
@@ -29,7 +30,7 @@ TickRunner blover_user;
 
 // *** Not In Queue
 // 只要允许，就在位置列表[pos_list]种植[type]植物。结合TickRunner使用。
-void PrePlant(int type, std::vector<Grid> pos_list);
+void PrePlant(int type, std::vector<Grid> grid_list);
 TickRunner pre_planter;
 
 // *** Not In Queue
@@ -39,6 +40,10 @@ bool IsExistZombieFromWave(int wave, int type, int row);
 // *** Not In Queue
 // 收尾操作
 void EndingTheWave(int time, int wave);
+
+// *** Not In Queue
+// 等待直到[row]行的[type_list]种类僵尸全部移动到能啃食到[col]列南瓜头的位置时，种植倭瓜将其消灭
+void WaitPlantSquash(int time, int wave, int row, int col, std::vector<int> type_list, int count);
 
 // *** Not In Queue
 // 在[wave]波，在{5, 6}和{2, 6}临时种植叶子保护伞消灭蹦极僵尸
@@ -66,21 +71,31 @@ void SkipTickToDamaged();
 
 void Script()
 {
-    // 跳帧运行，阵型受损时停止
-    SkipTickToDamaged();
+    // SkipTick(-199, 9);
+    // SkipTick(-199, 20);
     // 游戏倍速
-    SetGameSpeed(10);
+    // SetGameSpeed(10);
+    // 跳帧运行，阵型受损时停止
+    // SkipTickToDamaged();
 
-    // 脚本在游戏主界面和选择植物界面生效，按Q键结束运行
-    OpenMultipleEffective('Q', MAIN_UI_OR_FIGHT_UI);
+    // SetErrorMode(CONSOLE);
 
-    // 选择植物：咖啡豆、寒冰菇、模仿寒冰菇、睡莲叶、毁灭菇、南瓜头、小喷菇、三叶草、阳光菇、向日葵
-    std::vector<int> card_list = {COFFEE_BEAN, ICE_SHROOM, M_ICE_SHROOM, LILY_PAD, DOOM_SHROOM, PUMPKIN, PUFF_SHROOM, BLOVER, SUN_SHROOM, SUNFLOWER};
-    if (GetZombieTypeList()[BUNGEE_ZOMBIE])
-        card_list[8] = UMBRELLA_LEAF;
+    // 脚本在游戏主界面和选择植物界面生效，按F12键结束运行
+    OpenMultipleEffective(VK_F12, MAIN_UI_OR_FIGHT_UI);
+
+    // SetZombiesPlus({ZOMBIE, CONEHEAD_ZOMBIE, BUCKETHEAD_ZOMBIE, POLE_VAULTING_ZOMBIE, FOOTBALL_ZOMBIE, ZOMBONI, JACK_IN_THE_BOX_ZOMBIE, POGO_ZOMBIE, BUNGEE_ZOMBIE, LADDER_ZOMBIE, BALLOON_ZOMBIE, SNORKEL_ZOMBIE}, INTERNAL);
+
+    // 选择植物：咖啡豆、寒冰菇、模仿寒冰菇、睡莲叶、毁灭菇、南瓜头、倭瓜、三叶草、阳光菇、向日葵
+    std::vector<int> card_list = {COFFEE_BEAN, ICE_SHROOM, M_ICE_SHROOM, LILY_PAD, DOOM_SHROOM, PUMPKIN, SQUASH, BLOVER, SUN_SHROOM, SUNFLOWER};
+
     if (GetZombieTypeList()[GIGA_GARGANTUAR]) {
-        card_list[7] = FLOWER_POT;
+        card_list[6] = PUFF_SHROOM;
         card_list[9] = SCAREDY_SHROOM;
+        if (!GetZombieTypeList()[BALLOON_ZOMBIE])
+            card_list[7] = FLOWER_POT;
+    } else {
+        if (GetZombieTypeList()[BUNGEE_ZOMBIE])
+            card_list[8] = UMBRELLA_LEAF;
     }
     SelectCards(card_list);
 
@@ -90,10 +105,10 @@ void Script()
     // 开始自动存冰
     ice_filler.start({{4, 5}, {1, 4}, {6, 4}, {1, 5}, {6, 5}});
     // 开始自动修补南瓜头
-    plant_fixer.start(PUMPKIN, {{3, 5}, {4, 5}, {3, 6}, {4, 6}, {1, 4}, {6, 4}}, 1500);
+    plant_fixer.start(PUMPKIN, {{3, 6}, {4, 6}, {3, 5}, {4, 5}, {1, 4}, {6, 4}}, 1500);
     // 开始自动垫巨人僵尸
     auto_blocker.pushFunc([]() {
-        AutoBlock({PUFF_SHROOM, FLOWER_POT, SCAREDY_SHROOM, SUN_SHROOM, BLOVER, UMBRELLA_LEAF, SUNFLOWER}, {{1, 6}, {6, 6}, {2, 6}, {5, 6}});
+        AutoBlock({PUFF_SHROOM, FLOWER_POT, SCAREDY_SHROOM, SUN_SHROOM, BLOVER, UMBRELLA_LEAF, SUNFLOWER, PUMPKIN}, {{1, 6}, {6, 6}, {2, 6}, {5, 6}});
     });
     // 开始自动消灭2列以左的气球僵尸
     InsertTimeOperation(-599, 1, [=]() {
@@ -107,18 +122,21 @@ void Script()
     else
         NotExistGiga();
 }
-void AutoBlock(std::vector<PlantType> types, std::vector<Grid> pos_list)
+void AutoBlock(std::vector<PlantType> types, std::vector<Grid> grid_list)
 {
     auto zombies = GetMainObject()->zombieArray();
     auto seeds = GetMainObject()->seedArray();
+    const std::vector<int> state_list = {0, 13, 29, 31, 40, 44, 75, 76};
     std::vector<int> indices_seed;
+    std::vector<int> indices_zombie;
     for (PlantType each : types) {
         if (each > IMITATOR)
             indices_seed.emplace_back(GetSeedIndex(each - (IMITATOR + 1), true));
         else
             indices_seed.emplace_back(GetSeedIndex(each, false));
     }
-    for (Grid each : pos_list) {
+    for (Grid each : grid_list) {
+        indices_zombie.clear();
         for (int index = 0; index < GetMainObject()->zombieTotal(); ++index) {
             if (!zombies[index].isDead() && !zombies[index].isDisappeared() && zombies[index].row() + 1 == each.row) {
                 if (zombies[index].type() == POLE_VAULTING_ZOMBIE && (zombies[index].abscissa() > each.col * 80 - 51 && zombies[index].abscissa() < each.col * 80 + 40 && zombies[index].state() == 11)) {
@@ -126,15 +144,21 @@ void AutoBlock(std::vector<PlantType> types, std::vector<Grid> pos_list)
                         ShovelNotInQueue(each.row, each.col);
                     return;
                 }
-                if (((zombies[index].type() == GARGANTUAR || zombies[index].type() == GIGA_GARGANTUAR) && (zombies[index].abscissa() > each.col * 80 + 1 - 70 && zombies[index].abscissa() < each.col * 80 + 40 + 1 - 15)) || (zombies[index].type() == FOOTBALL_ZOMBIE && (zombies[index].abscissa() > each.col * 80 - 80 && zombies[index].abscissa() < each.col * 80 - 40 + 1 - 30))) {
-                    for (int index_seed : indices_seed) {
-                        if (index_seed >= 0) {
-                            if (seeds[index_seed].isUsable() && (GetPlantIndex(each.row, each.col) < 0 && GetPlantIndex(each.row, each.col, FLOWER_POT) < 0) && Asm::getPlantRejectType(FLOWER_POT, each.row - 1, each.col - 1) == Asm::NIL) {
-                                CardNotInQueue(index_seed + 1, each.row, each.col);
-                                break;
-                            }
-                        }
-                    }
+                if (((zombies[index].type() == GARGANTUAR || zombies[index].type() == GIGA_GARGANTUAR) && (zombies[index].abscissa() > each.col * 80 + 1 - 70 && zombies[index].abscissa() < each.col * 80 + 40 + 1 - 25)) || (zombies[index].type() == FOOTBALL_ZOMBIE && (zombies[index].abscissa() > each.col * 80 - 80 && zombies[index].abscissa() < each.col * 80 - 40 + 1 - 30)))
+                    indices_zombie.emplace_back(index);
+            }
+        }
+        for (int each_index : indices_zombie) {
+            if (!(std::find(state_list.begin(), state_list.end(), zombies[each_index].state()) != state_list.end()))
+                indices_zombie.clear();
+        }
+        if (indices_zombie.empty())
+            continue;
+        for (int index_seed : indices_seed) {
+            if (index_seed >= 0) {
+                if (seeds[index_seed].isUsable() && (GetPlantIndex(each.row, each.col) < 0 && GetPlantIndex(each.row, each.col, FLOWER_POT) < 0) && Asm::getPlantRejectType(FLOWER_POT, each.row - 1, each.col - 1) == Asm::NIL) {
+                    CardNotInQueue(index_seed + 1, each.row, each.col);
+                    break;
                 }
             }
         }
@@ -152,19 +176,27 @@ void UseBlover()
     if (seeds[index_clover_seed].isUsable()) {
         for (int index = 0; index < GetMainObject()->zombieTotal(); ++index) {
             if (zombies[index].isExist() && !zombies[index].isDisappeared() && !zombies[index].isDead() && zombies[index].type() == BALLOON_ZOMBIE && zombies[index].abscissa() <= 2 * 80) {
+                ShovelNotInQueue(1, 1);
                 CardNotInQueue(index_clover_seed + 1, {{1, 1}});
                 break;
             }
         }
     }
 }
-void PrePlant(int type, std::vector<Grid> pos_list)
+void PrePlant(int type, std::vector<Grid> grid_list)
 {
     if (GetMainObject()->gameClock() % 10 != 0)
         return;
     auto seeds = GetMainObject()->seedArray();
+    auto zombies = GetMainObject()->zombieArray();
     int index_seed = type > IMITATOR ? GetSeedIndex(type - (IMITATOR + 1), true) : GetSeedIndex(type, false);
-    for (auto each : pos_list) {
+    for (auto each : grid_list) {
+        for (int index = 0; index < GetMainObject()->zombieTotal(); ++index) {
+            if (!zombies[index].isDead() && !zombies[index].isDisappeared() && zombies[index].row() + 1 == each.row) {
+                if (((zombies[index].type() == GARGANTUAR || zombies[index].type() == GIGA_GARGANTUAR) && (zombies[index].abscissa() > each.col * 80 + 1 - 70 && zombies[index].abscissa() < each.col * 80 + 40 + 1)) || (zombies[index].type() == FOOTBALL_ZOMBIE && (zombies[index].abscissa() > each.col * 80 - 80 && zombies[index].abscissa() < each.col * 80 - 40 + 1 - 30)))
+                    return;
+            }
+        }
         if (GetPlantIndex(each.row, each.col) < 0 && GetPlantIndex(each.row, each.col, FLOWER_POT) < 0 && Asm::getPlantRejectType(type, each.row - 1, each.col - 1) == Asm::NIL && seeds[index_seed].isUsable())
             CardNotInQueue(index_seed + 1, each.row, each.col);
     }
@@ -184,6 +216,43 @@ void EndingTheWave(int time, int wave)
         if (IsExistZombieFromWave(wave, GARGANTUAR, -1) || IsExistZombieFromWave(wave, GIGA_GARGANTUAR, -1)) {
             SetTime(time, wave);
             pao_operator.recoverPao({{1, 8}, {6, 8}});
+        }
+    });
+}
+void WaitPlantSquash(int time, int wave, int row, int col, std::vector<int> type_list, int count = 1)
+{
+    if (count >= 3000)
+        return;
+    InsertTimeOperation(time, wave, [=]() {
+        auto zombies = GetMainObject()->zombieArray();
+        auto seeds = GetMainObject()->seedArray();
+        std::vector<int> indices_zombie;
+        bool is_opportunity;
+        indices_zombie.clear();
+        for (int index = 0; index < GetMainObject()->zombieTotal(); ++index) {
+            if (!zombies[index].isDead() && !zombies[index].isDisappeared() && std::find(type_list.begin(), type_list.end(), zombies[index].type()) != type_list.end() && zombies[index].row() + 1 == row)
+                indices_zombie.emplace_back(index);
+        }
+        is_opportunity = true;
+        for (auto each : indices_zombie) {
+            if (!(zombies[each].abscissa() < col * 80.0 - 10 + 30 + 1)) {
+                is_opportunity = false;
+                break;
+            }
+        }
+        if (!seeds[GetSeedIndex(LILY_PAD)].isUsable() || !seeds[GetSeedIndex(SQUASH)].isUsable())
+            is_opportunity = false;
+        if (is_opportunity) {
+            SetNowTime();
+            if (row >= 3 && row <= 4) {
+                Card(LILY_PAD, row, col);
+                Card(SQUASH, row, col);
+                Card(LILY_PAD, row, std::min(col + 1, 9));
+                Card(SQUASH, row, std::min(col + 1, 9));
+            }
+            return;
+        } else {
+            WaitPlantSquash(time + 1, wave, row, col, type_list, count + 1);
         }
     });
 }
@@ -237,6 +306,10 @@ void PlantSunflowers(int time, int wave, std::vector<Grid> grid_list)
 }
 void SkipTickToDamaged()
 {
+    // 启用20倍速
+    // WriteMemory<bool>(true, 0x6A9EAB);
+    // 启用10倍速
+    SetGameSpeed(10);
     auto condition
         = [=]() {
               std::vector<Grid> plant_list = {{3, 1}, {4, 1}, {3, 3}, {4, 3}, {2, 5}, {5, 5}, {3, 6}, {4, 6}};
@@ -280,7 +353,7 @@ void ExistGiga()
     // 主体节奏 ch4 I-PP|I-PP 1738|1738
     // wave1 N 首代
     SetTime(400 - 299, 1);
-    TryPlantDoomShroom({{3, 9}, {3, 8}, {4, 8}, {4, 9}}, true);
+    TryPlantDoomShroom({{3, 9}, {4, 9}, {3, 8}, {4, 8}}, true);
 
     // wave2 PP 首代
     SetTime(729 - 373, 2);
@@ -291,48 +364,31 @@ void ExistGiga()
         SetTime(-200, wave);
         ice_filler.coffee();
         SetTime(1738 - 200 - 373, wave);
-        pao_operator.pao({{2, 8.7625}, {5, 8.7625}});
+        pao_operator.recoverPao({{2, 8.7625}, {5, 8.7625}});
     }
 
     // wave10 N 首代
     SetTime(550 - 299, 10);
-    TryPlantDoomShroom({{3, 8}, {4, 8}, {3, 9}, {4, 9}}, true);
+    TryPlantDoomShroom({{3, 8}, {4, 8}}, true);
 
     // wave11 PP 首代
     SetTime(729 - 373, 11);
     pao_operator.pao({{2, 8.6125}, {5, 8.6125}});
 
-    // wave20 PP(N)
-    // 如果wave19刷出了红眼巨人僵尸，提前种植毁灭菇以补充运算量
-    InsertTimeOperation(1738 - 200 + 3, 19, [=]() {
-        if (IsExistZombieFromWave(19, GIGA_GARGANTUAR, -1)) {
-            SetTime(1738 - 200 + 3, 19);
-            TryPlantDoomShroom({{3, 9}, {3, 8}, {4, 8}, {4, 9}}, false);
-        }
-    });
-    InsertTimeOperation(374 - 751, 20, [=]() {
-        if (GetPlantIndex(4, 8, DOOM_SHROOM) >= 0) {
-            SetTime(570 - 298, 20);
-            Card(COFFEE_BEAN, 4, 8);
-            SetTime(250, 20);
-            Card(LILY_PAD, 4, 9);
-        } else {
-            if (GetZombieTypeList()[BUNGEE_ZOMBIE])
-                PlantTemporaryUmbrella(20);
-            SetTime(410 - 373, 20);
-            pao_operator.recoverPao({{2, 8.725}, {5, 8.725}});
-        }
-    });
+    // wave20 N
+    SetTime(-600, 20);
+    TryPlantDoomShroom({{3, 8}, {4, 8}}, false);
+    SetTime(550 - 298, 20);
+    Card(COFFEE_BEAN, {{3, 8}, {4, 8}});
 
     // wave9, 19 收尾操作
-    for (int wave : {9, 19}) {
-        EndingTheWave(1738 + 1738 - 200 - 373, wave);
-    }
+    for (int wave : {9, 19})
+        EndingTheWave(2120 + 1738 - 200 - 373, wave);
 
     // wave20 收尾操作
     EndingTheWave(900 + 1738 - 200 - 373, 20);
     InsertTimeOperation(900 + 1738 - 200 + 3, 20, [=]() {
-        SetTime(900 + 1738 + 1738 - 200 - 373);
+        SetTime(4258 - 373);
         if (IsExistZombieFromWave(20, GIGA_GARGANTUAR, 1))
             pao_operator.pao({{3, 8}, {5, 8}});
         else if (IsExistZombieFromWave(20, GIGA_GARGANTUAR, 6))
@@ -347,7 +403,9 @@ void NotExistGiga()
 {
 
     // 种植向日葵
-    PlantSunflowers(-599, 1, {{2, 6}, {5, 6}, {1, 6}, {6, 6}, {3, 7}, {4, 7}});
+    PlantSunflowers(-599, 1, {{2, 6}, {5, 6}, {1, 6}, {6, 6}});
+    if (!GetZombieTypeList()[GARGANTUAR] && !GetZombieTypeList()[DIGGER_ZOMBIE])
+        PlantSunflowers(-599 + 6 * 751, 1, {{1, 1}, {2, 1}, {5, 1}, {6, 1}});
 
     // 主体节奏 C7i I-PP|I-PP|I-N|PP 1738|1738|1152|685
     // wave1 PP
@@ -379,7 +437,7 @@ void NotExistGiga()
         SetTime(-200, wave);
         ice_filler.coffee();
         SetTime(1152 - 200 - 298, wave);
-        TryPlantDoomShroom({{3, 9}, {3, 8}, {4, 8}, {4, 9}}, true);
+        TryPlantDoomShroom({{3, 9}, {4, 9}, {3, 8}, {4, 8}}, true);
     }
 
     // wave9 PP
@@ -388,29 +446,37 @@ void NotExistGiga()
         if (IsExistZombieFromWave(9, GARGANTUAR, -1)) {
             pao_operator.pao({{2, 8.7625}, {5, 8.7625}});
         } else {
-            if (IsExistZombieFromWave(9, -1, 3))
+            if (IsExistZombieFromWave(9, -1, 3)) {
                 pao_operator.pao({{1, 8.7625}, {5, 8.7625}});
-            else if (IsExistZombieFromWave(9, -1, 4))
+                WaitPlantSquash(700, 9, 3, 6, {CONEHEAD_ZOMBIE, BUCKETHEAD_ZOMBIE, SNORKEL_ZOMBIE});
+            } else if (IsExistZombieFromWave(9, -1, 4)) {
                 pao_operator.pao({{2, 8.7625}, {6, 8.7625}});
-            else
+                WaitPlantSquash(700, 9, 4, 6, {CONEHEAD_ZOMBIE, BUCKETHEAD_ZOMBIE, SNORKEL_ZOMBIE});
+            } else {
                 pao_operator.pao({{2, 8.7625}, {5, 8.7625}});
+            }
         }
     });
 
     // wave19 I-PP
     SetTime(-200, 19);
     ice_filler.coffee();
-    InsertTimeOperation(1738 - 200 - 373, 19, [=]() {
-        SetTime(1738 - 200 - 373, 19);
+    InsertTimeOperation(1754 - 200 - 373, 19, [=]() {
+        SetTime(1754 - 200 - 373, 19);
         if (IsExistZombieFromWave(19, GARGANTUAR, -1)) {
             pao_operator.pao({{2, 8.7625}, {5, 8.7625}});
         } else {
-            if (IsExistZombieFromWave(19, -1, 3))
+            if (IsExistZombieFromWave(19, -1, 3)) {
                 pao_operator.pao({{1, 8.7625}, {5, 8.7625}});
-            else if (IsExistZombieFromWave(19, -1, 4))
+                Card(LILY_PAD, 3, 7);
+                WaitPlantSquash(1754 - 200 - 373, 19, 3, 6, {CONEHEAD_ZOMBIE, BUCKETHEAD_ZOMBIE, SNORKEL_ZOMBIE});
+            } else if (IsExistZombieFromWave(19, -1, 4)) {
                 pao_operator.pao({{2, 8.7625}, {6, 8.7625}});
-            else
+                Card(LILY_PAD, 4, 7);
+                WaitPlantSquash(1754 - 200 - 373, 19, 4, 6, {CONEHEAD_ZOMBIE, BUCKETHEAD_ZOMBIE, SNORKEL_ZOMBIE});
+            } else {
                 pao_operator.pao({{2, 8.7625}, {5, 8.7625}});
+            }
         }
     });
 
@@ -421,29 +487,34 @@ void NotExistGiga()
     // wave20 PP和收尾操作
     InsertTimeOperation(0, 20, [=]() {
         if (IsExistZombieFromWave(20, GARGANTUAR, -1)) {
-            SetTime(676 - 373, 20);
-            pao_operator.pao({{2, 8.7625}, {5, 8.7625}});
+            SetTime(776 - 373, 20);
+            pao_operator.pao({{2, 8.45}, {5, 8.45}});
             if (IsExistZombieFromWave(20, GARGANTUAR, 1)) {
-                SetTime(2600 + 676 - 373, 20);
+                SetTime(2500 + 776 - 373, 20);
                 pao_operator.pao({{3, 8}, {5, 8}});
             } else if (IsExistZombieFromWave(20, GARGANTUAR, 6)) {
-                SetTime(2600 + 676 - 373, 20);
+                SetTime(2500 + 776 - 373, 20);
                 pao_operator.pao({{2, 8}, {4, 8}});
             } else if (IsExistZombieFromWave(20, GARGANTUAR, 2)) {
-                SetTime(2600 + 676 - 373, 20);
+                SetTime(2500 + 776 - 373, 20);
                 pao_operator.pao(5, 8);
             } else if (IsExistZombieFromWave(20, GARGANTUAR, 5)) {
-                SetTime(2600 + 676 - 373, 20);
+                SetTime(2500 + 776 - 373, 20);
                 pao_operator.pao(2, 8);
             }
         } else {
-            SetTime(676 - 373, 20);
-            if (IsExistZombieFromWave(20, -1, 3))
-                pao_operator.pao({{1, 8}, {5, 8}});
-            else if (IsExistZombieFromWave(20, -1, 4))
-                pao_operator.pao({{2, 8}, {6, 8}});
-            else
-                pao_operator.pao({{2, 8}, {5, 8}});
+            SetTime(776 - 373, 20);
+            if (IsExistZombieFromWave(20, -1, 3)) {
+                pao_operator.pao({{1, 8.45}, {5, 8.45}});
+                Card(LILY_PAD, 3, 7);
+                WaitPlantSquash(776 - 373, 20, 3, 6, {CONEHEAD_ZOMBIE, BUCKETHEAD_ZOMBIE, SNORKEL_ZOMBIE});
+            } else if (IsExistZombieFromWave(20, -1, 4)) {
+                pao_operator.pao({{2, 8.45}, {6, 8.45}});
+                Card(LILY_PAD, 4, 7);
+                WaitPlantSquash(776 - 373, 20, 4, 6, {CONEHEAD_ZOMBIE, BUCKETHEAD_ZOMBIE, SNORKEL_ZOMBIE});
+            } else {
+                pao_operator.pao({{2, 8.45}, {5, 8.45}});
+            }
         }
     });
 
