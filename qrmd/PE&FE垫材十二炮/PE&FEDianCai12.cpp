@@ -2,12 +2,12 @@
  * @Author: qrmd
  * @Date: 2022-04-20 20:34:07
  * @LastEditors: qrmd
- * @LastEditTime: 2022-08-05 09:20:09
+ * @LastEditTime: 2022-08-05 16:52:16
  * @Description:PE&FE垫材十二炮 挂机冲关脚本
  * 使用方法：1、前往https:// gitee.com/std::vector-wlc/AsmVsZombies，根据教程下载并安装好AsmVsZombies
  *          2、前往游戏存档文件夹C:/ProgramData/PopCap Games/PlantsVsZombies/userdata，备份原游戏存档，然后用脚本配套的存档文件替换同名文件
  *          3、在Visul Studio Code中打开本脚本，右键点击编辑区空白处，在弹出菜单中选择“AvZ:Run Script”
- *          4、脚本支持游戏倍速和跳帧功能，分别删除第45行和第43行的注释符“//”并保存，可使相应功能在下一次运行脚本时生效
+ *          4、脚本支持游戏倍速和跳帧功能，分别删除第41行和第39行的注释符“//”并保存，可使相应功能在下一次运行脚本时生效
  * 来自AvZScript公开脚本仓库：
  * 主库：https://github.com/qrmd0/AvZScript
  * 镜像库：https://gitee.com/qrmd/AvZScript
@@ -16,10 +16,6 @@
 
 #include "avz.h"
 using namespace AvZ;
-
-// *** Not In Queue
-// 返回场上处于就绪或装填状态的玉米加农炮数量
-int GetNumberofCannonReady();
 
 // *** Not In Queue
 // 返回前场是否存在僵尸
@@ -40,7 +36,7 @@ void SkipTickToDamaged();
 void Script()
 {
     // 跳帧运行，阵型受损时停止
-    SkipTickToDamaged();
+    // SkipTickToDamaged();
     // 游戏倍速
     SetGameSpeed(10);
     // 调试窗口
@@ -56,18 +52,11 @@ void Script()
     pao_operator.resetPaoList({{1, 5}, {6, 5}, {2, 5}, {5, 5}, {3, 1}, {4, 1}, {3, 3}, {4, 3}, {3, 5}, {4, 5}, {3, 7}, {4, 7}});
     for (int wave = 1; wave <= 20; ++wave) {
         // PP
-        if (is_exist_GIGA_GARGANTUAR && wave == 20) {
-            InsertTimeOperation(223 - 373, wave, [=]() {
-                if (GetNumberofCannonReady() >= 3) {
-                    SetTime(341 - 376, wave);
-                    pao_operator.pao({{2, 8.8}, {5, 8.8}});
-                } else { // 可用的炮不足时，执行PA
-                    SetTime(341 - 376, wave);
-                    pao_operator.pao(2, 8.8);
-                    SetTime(341 - 100, wave);
-                    Card(CHERRY_BOMB, 5, 9);
-                }
-            });
+        if (wave == 20) {
+            SetTime(341 - 376, wave);
+            pao_operator.pao(2, 8.8);
+            SetTime(341 - 100, wave);
+            Card(CHERRY_BOMB, 5, 9);
         } else {
             SetTime(341 - 376, wave);
             pao_operator.pao({{2, 8.8}, {5, 8.8}});
@@ -129,17 +118,6 @@ void Script()
     // 炮消珊瑚
     SetTime(223 - 373, 20);
     pao_operator.pao(4, 7.5875);
-}
-int GetNumberofCannonReady()
-{
-    int num = 0;
-    auto plants = GetMainObject()->plantArray();
-    for (int index = 0; index < GetMainObject()->plantTotal(); ++index) {
-        if (plants[index].state() == 37 || plants[index].state() == 36) {
-            num += 1;
-        }
-    }
-    return num;
 }
 bool GetIsExistZombieInTheFrountOfGround()
 {
