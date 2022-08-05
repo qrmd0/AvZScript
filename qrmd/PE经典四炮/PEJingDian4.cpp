@@ -2,7 +2,7 @@
  * @Author: qrmd
  * @Date: 2022-08-02 13:56:29
  * @LastEditors: qrmd
- * @LastEditTime: 2022-08-05 00:12:58
+ * @LastEditTime: 2022-08-05 08:44:18
  * @Description:PE经典四炮 挂机冲关脚本
  * 使用方法：1、前往https://gitee.com/vector-wlc/AsmVsZombies，根据教程下载并安装好AsmVsZombies
  *          2、前往游戏存档文件夹C:/ProgramData/PopCap Games/PlantsVsZombies/userdata，备份原游戏存档，然后用脚本配套的存档文件替换同名文件
@@ -134,7 +134,7 @@ void AutoBlock(std::vector<PlantType> types, std::vector<Grid> grid_list)
         indices_zombie.clear();
         for (int index = 0; index < GetMainObject()->zombieTotal(); ++index) {
             if (!zombies[index].isDead() && !zombies[index].isDisappeared() && zombies[index].row() + 1 == each.row) {
-                if (zombies[index].type() == POLE_VAULTING_ZOMBIE && (zombies[index].abscissa() > each.col * 80 - 51 && zombies[index].abscissa() < each.col * 80 + 40 && zombies[index].state() == 11)) {
+                if (zombies[index].type() == POLE_VAULTING_ZOMBIE && (zombies[index].abscissa() > each.col * 80 - 51 && zombies[index].abscissa() < each.col * 80 + 40 + 10 && zombies[index].state() == 11)) {
                     if (GetPlantIndex(each.row, each.col) >= 0 || GetPlantIndex(each.row, each.col, FLOWER_POT) >= 0)
                         ShovelNotInQueue(each.row, each.col);
                     return;
