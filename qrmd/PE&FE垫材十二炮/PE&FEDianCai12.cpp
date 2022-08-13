@@ -2,7 +2,7 @@
  * @Author: qrmd
  * @Date: 2022-04-20 20:34:07
  * @LastEditors: qrmd
- * @LastEditTime: 2022-08-06 00:21:30
+ * @LastEditTime: 2022-08-06 15:23:45
  * @Description:PE&FE垫材十二炮 挂机冲关脚本
  * 使用方法：1、前往https:// gitee.com/std::vector-wlc/AsmVsZombies，根据教程下载并安装好AsmVsZombies
  *          2、前往游戏存档文件夹C:/ProgramData/PopCap Games/PlantsVsZombies/userdata，备份原游戏存档，然后用脚本配套的存档文件替换同名文件
@@ -38,7 +38,7 @@ void Script()
     // 跳帧运行，阵型受损时停止
     // SkipTickToDamaged();
     // 游戏倍速
-    SetGameSpeed(10);
+    // SetGameSpeed(10);
     // 调试窗口
     // SetErrorMode(CONSOLE);
     // 脚本循环生效，按'Q'键停止
