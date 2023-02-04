@@ -1,0 +1,80 @@
+#include <avz.h>
+
+void AScript()
+{
+    ASetZombies({
+        ATT_4,  // 铁桶
+        ABC_12, // 冰车
+        AXC_15, // 小丑
+        AQQ_16, // 气球
+        AFT_21, // 扶梯
+        ATL_22, // 投篮
+        ABY_23, // 白眼
+        AHY_32, // 红眼
+        ADANCING_ZOMBIE,
+        AFOOTBALL_ZOMBIE,
+        ADOLPHIN_RIDER_ZOMBIE,
+        ABUNGEE_ZOMBIE,
+        APOLE_VAULTING_ZOMBIE,
+        ADIGGER_ZOMBIE,
+    });
+    ASelectCards({
+        AICE_SHROOM,
+        AM_ICE_SHROOM,
+        ACOFFEE_BEAN,
+        ACHERRY_BOMB,
+        APUFF_SHROOM,
+        ASUN_SHROOM,
+        AFLOWER_POT,
+        ASCAREDY_SHROOM,
+        APUMPKIN,
+        AWALL_NUT,
+    });
+
+    aIceFiller.Start({{4, 9}});
+    aIceFiller.SetIceSeedList({AM_ICE_SHROOM, AICE_SHROOM});
+
+    AConnect(ATime(1, -599), [] {
+        aCobManager.AutoGetList();
+    });
+
+    for (auto wave : {1, 4, 7, 11, 14, 17}) {
+        AConnect(ATime(wave, -14), [] {
+            aCobManager.Fire({{2, 9}, {5, 9}});
+            AConnect(ANowDelayTime(107), [] { aCobManager.Fire({{1, 7.7}, {5, 7.7}}); });
+        });
+    }
+    for (auto wave : {2, 5, 8, 12, 15, 18}) {
+        AConnect(ATime(wave, -95), [] {
+            aCobManager.Fire({{2, 9}, {5, 9}});
+            AConnect(ANowDelayTime(373 - 299), [] { aIceFiller.Coffee(); });
+        });
+    }
+    for (auto wave : {3, 6, 9, 13, 16, 19}) {
+        AConnect(ATime(wave, -95), [] {
+            aCobManager.Fire({{2, 9}, {5, 9}, {2, 9}, {5, 9}});
+            AConnect(ANowDelayTime(107), [] { aCobManager.Fire({{1, 8.8}, {5, 8.8}}); });
+        });
+    }
+
+    AConnect(ATime(10, -55), [] {
+        aCobManager.Fire({{2, 9}, {5, 9}, {2, 9}, {5, 9}});
+        AConnect(ANowDelayTime(107), [] { aCobManager.Fire({{1, 8.8}, {5, 8.8}}); });
+    });
+
+    AConnect(ATime(20, -150), [] {
+        aCobManager.Fire(4, 7.5875);
+    });
+    AConnect(ATime(20, -55), [] {
+        aCobManager.Fire({{2, 9}, {5, 9}, {2, 9}, {5, 9}});
+        AConnect(ANowDelayTime(107), [] { aCobManager.Fire({{1, 8.8}, {5, 8.8}, {1, 8.8}, {5, 8.8}}); });
+    });
+    for (auto wave : {9, 19}) {
+        AConnect(ATime(wave, 50), [] {
+            aCobManager.RecoverFire({{2, 9}, {5, 9}});
+        });
+    }
+    AConnect(ATime(20, 500), [] {
+        aCobManager.RecoverFire({{2, 9}, {5, 9}});
+    });
+}
