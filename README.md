@@ -2,6 +2,10 @@
 
 [AsmVsZombies](https://github.com/vector-wlc/AsmVsZombies) 的公开脚本仓库
 
+# 镜像库
+
+如果主库访问受限，请访问镜像库。如果要上传代码，请传入主库，主库的更新会被定期推送至镜像库，而镜像库的变更不会影响到主库。  
+镜像库：https://gitee.com/qrmd/AvZScript  
 
 # 使用说明
 ## 下载
