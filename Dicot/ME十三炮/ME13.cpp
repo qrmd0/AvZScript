@@ -64,7 +64,7 @@ void AScript()
                          {4, 1},
                          {5, 6},
                          {5, 1},
-                     }););
+                     }));
 
     for (int wave = 1; wave < 21; ++wave)
     {
