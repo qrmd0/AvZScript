@@ -14,7 +14,8 @@ ACoroutine DianCai()
 {
     ACard({{APUFF_SHROOM, 4, 9}, {ASUN_SHROOM, 5, 9}});
     co_await ANowDelayTime(120);
-    AShovel({{4, 9}, {5, 9}});
+    ARemovePlant(4, 9);
+    ARemovePlant(5, 9);
 }
 
 void AScript()
@@ -103,9 +104,10 @@ void AScript()
 
             if (wave == 9 || wave == 19)
             {
-                Connect(wave, 601 - 150, aCobManager.Fire(4, 9));
-                Connect(wave, 601 - 150 + 450, aCobManager.Fire(1, 9));
-                Connect(wave, 601 + 1300 - 200 - 373, Delay(300, aCobManager.Fire({{2, 9}, {5, 9}})));
+                Connect(wave, 601 - 150, aCobManager.Fire(4, 9);
+                        Delay(450, aCobManager.Fire(1, 9)));
+                Connect(wave, 601 + 1300 - 200 - 373,
+                        Delay(300, aCobManager.Fire({{2, 9}, {5, 9}})));
             }
         }
 
@@ -136,9 +138,10 @@ void AScript()
         {
             Connect(wave, -56, aCobManager.Fire({{1, 9}, {4, 9}}));
             Connect(wave, -35, aCobManager.Fire({{2, 9}, {5, 9}})); // 炸墓碑冒出的僵尸
-            Connect(wave, 601 - 100 - 83, aCobManager.Fire({{1, 8.3}, {4, 8.3}}));
-            Connect(wave, 601 - 100, ACard(AICE_SHROOM, {{1, 9}, {2, 9}, {3, 9}, {4, 9}, {5, 9}})); // 冰杀小偷
-            Connect(wave, 601, aCobManager.Fire({{2, 8.2}, {5, 8.2}}));                             // 第 20 波手动收尾
+            Connect(wave, 601 - 100 - 83, aCobManager.Fire({{1, 8.3}, {4, 8.3}});
+                    Delay(100, ACard(AICE_SHROOM, {{1, 9}, {2, 9}, {3, 9}, {4, 9}, {5, 9}}))); // 冰杀小偷
+            Connect(wave, 601, aCobManager.Fire({{2, 8.2}, {5, 8.2}}));
+            // 第 20 波手动收尾
         }
     }
 }

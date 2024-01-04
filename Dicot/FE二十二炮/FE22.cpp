@@ -21,7 +21,8 @@ ACoroutine DianCai()
         ACard({{AFLOWER_POT, 5, 9}, {ASCAREDY_SHROOM, 6, 9}});
     }
     co_await ANowDelayTime(30);
-    AShovel({{5, 9}, {6, 9}});
+    ARemovePlant(5, 9);
+    ARemovePlant(6, 9);
 }
 
 void AScript()
@@ -245,5 +246,6 @@ void AScript()
     Connect(20, -60, aCobManager.Fire({{2, 9}, {5, 9}})); // 等到刷新前 60cs
     Connect(20, -60 + 108, aCobManager.Fire({{1, 8.8}, {5, 8.8}}));
     Connect(20, -60 + 108 + 108, aCobManager.Fire({{1, 8.6}, {5, 8.6}}));
-    Connect(20, -60 + 108 + 108 + 108, aCobManager.Fire({{2, 8.4}, {5, 8.4}})); // 炸小偷; 最后一大波手动收尾
+    Connect(20, -60 + 108 + 108 + 108, aCobManager.Fire({{2, 8.4}, {5, 8.4}})); // 炸小偷
+    // 最后一大波手动收尾
 }

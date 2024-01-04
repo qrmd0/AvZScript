@@ -64,7 +64,7 @@ void AScript()
                          {4, 1},
                          {5, 6},
                          {5, 1},
-                     }););
+                     }));
 
     for (int wave = 1; wave < 21; ++wave)
     {
@@ -73,7 +73,8 @@ void AScript()
             Connect(wave, 10 - 320, ACoLaunch(II)); // 冰消空降
             Connect(wave, 100, aCobManager.RoofFire(5, 8));
             Connect(wave, 800, aCobManager.RoofFire({{2, 9}, {2, 9}, {2, 9}, {2, 9}}));
-            Connect(wave, 1000, aCobManager.RoofFire({{4, 9}, {4, 9}, {4, 9}, {4, 9}})); // 第 20 波手动收尾
+            Connect(wave, 1000, aCobManager.RoofFire({{4, 9}, {4, 9}, {4, 9}, {4, 9}}));
+            // 第 20 波手动收尾
         }
 
         // IP-PPD
