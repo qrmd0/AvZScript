@@ -65,83 +65,76 @@ void AScript()
                          {5, 7},
                      }));
 
-    for (int wave = 1; wave < 21; ++wave)
+    // PPD
+    // wave 10
+    Connect(10, -56, aCobManager.Fire({{2, 9}, {4, 9}}));
+    Connect(10, 0, aCobManager.Fire(2, 9));
+
+    // IPP-PP
+    for (auto wave : {1, 7, 11, 17})
     {
-        // PPD
-        if (wave == 10)
+        Connect(wave, -150, aCobManager.Fire({{2, 8.5}, {4, 8.5}}));
+        Connect(wave, 5 - 100, ACard(AICE_SHROOM, 1, 9));
+        if (wave == 11)
         {
-            Connect(wave, -56, aCobManager.Fire({{2, 9}, {4, 9}}));
-            Connect(wave, 0, aCobManager.Fire(2, 9));
+            Connect(wave, -150 + 83, ACoLaunch(DianCai));
         }
+        Connect(wave, 1300 - 200 - 373, aCobManager.Fire({{2, 9}, {4, 9}}));
+    }
 
-        // IPP-PP
-        else if (wave == 1 || wave == 7 || wave == 11 || wave == 17)
+    // PADC
+    for (auto wave : {2, 8, 12, 18})
+    {
+        Connect(wave, -95, aCobManager.Fire(2, 9));
+        Connect(wave, -12, aCobManager.Fire(2, 9));
+        Connect(wave, -95 + 373 - 100, ACard(ACHERRY_BOMB, 5, 9));
+    }
+
+    // PPDD
+    for (auto wave : {3, 9, 13, 19})
+    {
+        Connect(wave, -95, aCobManager.Fire({{2, 9}, {5, 9}}));
+        Connect(wave, -15, aCobManager.Fire({{1, 9}, {4, 9}}));
+        Connect(wave, 0, ACoLaunch(DianCai));
+        Connect(wave, 601 + 44 - 100 - 320, ACard(AM_ICE_SHROOM, 1, 9)); // 44cs 预判冰
+
+        if (wave == 9 || wave == 19)
         {
-            Connect(wave, -150, aCobManager.Fire({{2, 8.5}, {4, 8.5}}));
-            Connect(wave, 5 - 100, ACard(AICE_SHROOM, 1, 9));
-            if (wave == 11)
-            {
-                Connect(wave, -150 + 83, ACoLaunch(DianCai));
-            }
-            Connect(wave, 1300 - 200 - 373, aCobManager.Fire({{2, 9}, {4, 9}}));
-        }
-
-        // PADC
-        else if (wave == 2 || wave == 8 || wave == 12 || wave == 18)
-        {
-            Connect(wave, -95, aCobManager.Fire(2, 9));
-            Connect(wave, -12, aCobManager.Fire(2, 9));
-            Connect(wave, -95 + 373 - 100, ACard(ACHERRY_BOMB, 5, 9));
-        }
-
-        // PPDD
-        else if (wave == 3 || wave == 9 || wave == 13 || wave == 19)
-        {
-            Connect(wave, -95, aCobManager.Fire({{2, 9}, {5, 9}}));
-            Connect(wave, -15, aCobManager.Fire({{1, 9}, {4, 9}}));
-            Connect(wave, 0, ACoLaunch(DianCai));
-            Connect(wave, 601 + 44 - 100 - 320, ACard(AM_ICE_SHROOM, 1, 9)); // 44cs 预判冰
-
-            if (wave == 9 || wave == 19)
-            {
-                Connect(wave, 601 - 150, aCobManager.Fire(4, 9);
-                        Delay(450, aCobManager.Fire(1, 9)));
-                Connect(wave, 601 + 1300 - 200 - 373,
-                        Delay(300, aCobManager.Fire({{2, 9}, {5, 9}})));
-            }
-        }
-
-        // IPP-PP
-        else if (wave == 4 || wave == 14)
-        {
-            Connect(wave, -150, aCobManager.Fire({{2, 8.5}, {4, 8.5}}));
-            Connect(wave, 1300 - 200 - 373, aCobManager.Fire({{2, 9}, {4, 9}}));
-        }
-
-        // NDC
-        else if (wave == 5 || wave == 15)
-        {
-            Connect(wave, -12, aCobManager.Fire(2, 9));
-            // 是 wave 5 弹坑在 3-9, 否则在 2-9
-            Connect(wave, -95 + 373 - 100, (wave == 5) ? ACard(ADOOM_SHROOM, 3, 9) : ACard(ADOOM_SHROOM, 2, 9));
-        }
-
-        // PPDD
-        else if (wave == 6 || wave == 16)
-        {
-            Connect(wave, -95, aCobManager.Fire({{2, 9}, {5, 9}}));
-            Connect(wave, -12, aCobManager.Fire({{1, 9}, {4, 9}}));
-            Connect(wave, 0, ACoLaunch(DianCai));
-        }
-
-        else if (wave == 20)
-        {
-            Connect(wave, -56, aCobManager.Fire({{1, 9}, {4, 9}}));
-            Connect(wave, -35, aCobManager.Fire({{2, 9}, {5, 9}})); // 炸墓碑冒出的僵尸
-            Connect(wave, 601 - 100 - 83, aCobManager.Fire({{1, 8.3}, {4, 8.3}});
-                    Delay(100, ACard(AICE_SHROOM, {{1, 9}, {2, 9}, {3, 9}, {4, 9}, {5, 9}}))); // 冰杀小偷
-            Connect(wave, 601, aCobManager.Fire({{2, 8.2}, {5, 8.2}}));
-            // 第 20 波手动收尾
+            Connect(wave, 601 - 150, aCobManager.Fire(4, 9);
+                    Delay(450, aCobManager.Fire(1, 9)));
+            Connect(wave, 601 + 1300 - 200 - 373,
+                    Delay(300, aCobManager.Fire({{2, 9}, {5, 9}})));
         }
     }
+
+    // IPP-PP
+    for (auto wave : {4, 14})
+    {
+        Connect(wave, -150, aCobManager.Fire({{2, 8.5}, {4, 8.5}}));
+        Connect(wave, 1300 - 200 - 373, aCobManager.Fire({{2, 9}, {4, 9}}));
+    }
+
+    // NDC
+    for (auto wave : {5, 15})
+    {
+        Connect(wave, -12, aCobManager.Fire(2, 9));
+        // 是 wave 5 弹坑在 3-9, 否则在 2-9
+        Connect(wave, -95 + 373 - 100, (wave == 5) ? ACard(ADOOM_SHROOM, 3, 9) : ACard(ADOOM_SHROOM, 2, 9));
+    }
+
+    // PPDD
+    for (auto wave : {6, 16})
+    {
+        Connect(wave, -95, aCobManager.Fire({{2, 9}, {5, 9}}));
+        Connect(wave, -12, aCobManager.Fire({{1, 9}, {4, 9}}));
+        Connect(wave, 0, ACoLaunch(DianCai));
+    }
+
+    // wave 20
+    Connect(20, -56, aCobManager.Fire({{1, 9}, {4, 9}}));
+    Connect(20, -35, aCobManager.Fire({{2, 9}, {5, 9}})); // 炸墓碑冒出的僵尸
+    Connect(20, 601 - 100 - 83, aCobManager.Fire({{1, 8.3}, {4, 8.3}});
+            Delay(100, ACard(AICE_SHROOM, {{1, 9}, {2, 9}, {3, 9}, {4, 9}, {5, 9}}))); // 冰杀小偷
+    Connect(20, 601, aCobManager.Fire({{2, 8.2}, {5, 8.2}}));
+    // 第 20 波手动收尾
 }
