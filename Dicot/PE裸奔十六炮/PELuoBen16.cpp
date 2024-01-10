@@ -11,14 +11,16 @@
 #define Delay(delayTime, ...) AConnect(ANowDelayTime(delayTime), [] { __VA_ARGS__; })
 
 // 种垫铲垫
-ACoroutine DianCai_Up() // 垫上半场
+// 垫上半场
+ACoroutine DianCai_Up()
 {
     ACard({{APUFF_SHROOM, 1, 7}, {ASUN_SHROOM, 2, 7}});
     co_await ANowDelayTime(400);
     ARemovePlant(1, 7);
     ARemovePlant(2, 7);
 }
-ACoroutine DianCai_Low() // 垫下半场
+// 垫下半场
+ACoroutine DianCai_Low()
 {
     ACard({{APUFF_SHROOM, 5, 9}, {ASUN_SHROOM, 6, 9}});
     co_await ANowDelayTime(100);
@@ -43,12 +45,11 @@ ACoroutine Sunflower()
     co_await []
     { return AGetPvzBase()->MainObject()->Words()->MRef<int>(0x8C) == 12; };
     // 结尾铲
-    for (int row : {1, 2})
+    for (auto row : {1, 2})
     {
-        for (float col : {2, 5, 6})
-        {
-            ARemovePlant(row, col);
-        }
+        ARemovePlant(row, 2);
+        ARemovePlant(row, 5);
+        ARemovePlant(row, 6);
     }
 }
 
@@ -142,10 +143,12 @@ void AScript()
         }
     }
 
-    // wave 20
-    Connect(20, -150, aCobManager.Fire(4, 7); aIceFiller.Stop());
-    Connect(20, -60, aCobManager.Fire({{1, 9}, {2, 9}, {5, 9}, {6, 9}}); // 等到刷新前 60cs
-            Delay(108, aCobManager.Fire({{1, 9}, {2, 9}, {5, 9}, {6, 9}});
-                  Delay(180, aCobManager.Fire(1, 4)))); // 尾炸小偷
-    // 第 20 波手动收尾
+    for (auto wave : {20})
+    {
+        Connect(wave, -150, aCobManager.Fire(4, 7); aIceFiller.Stop());
+        Connect(wave, -60, aCobManager.Fire({{1, 9}, {2, 9}, {5, 9}, {6, 9}}); // 等到刷新前 60cs
+                Delay(108, aCobManager.Fire({{1, 9}, {2, 9}, {5, 9}, {6, 9}});
+                      Delay(180, aCobManager.Fire(1, 4)))); // 尾炸小偷
+        // 第 20 波手动收尾
+    }
 }

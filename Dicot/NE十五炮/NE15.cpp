@@ -66,9 +66,11 @@ void AScript()
                      }));
 
     // PPD
-    // wave 10
-    Connect(10, -56, aCobManager.Fire({{2, 9}, {4, 9}}));
-    Connect(10, 0, aCobManager.Fire(2, 9));
+    for (auto wave : {10})
+    {
+        Connect(wave, -56, aCobManager.Fire({{2, 9}, {4, 9}}));
+        Connect(wave, 0, aCobManager.Fire(2, 9));
+    }
 
     // IPP-PP
     for (auto wave : {1, 7, 11, 17})
@@ -130,11 +132,13 @@ void AScript()
         Connect(wave, 0, ACoLaunch(DianCai));
     }
 
-    // wave 20
-    Connect(20, -56, aCobManager.Fire({{1, 9}, {4, 9}}));
-    Connect(20, -35, aCobManager.Fire({{2, 9}, {5, 9}})); // 炸墓碑冒出的僵尸
-    Connect(20, 601 - 100 - 83, aCobManager.Fire({{1, 8.3}, {4, 8.3}});
-            Delay(100, ACard(AICE_SHROOM, {{1, 9}, {2, 9}, {3, 9}, {4, 9}, {5, 9}}))); // 冰杀小偷
-    Connect(20, 601, aCobManager.Fire({{2, 8.2}, {5, 8.2}}));
-    // 第 20 波手动收尾
+    for (auto wave : {20})
+    {
+        Connect(wave, -56, aCobManager.Fire({{1, 9}, {4, 9}}));
+        Connect(wave, -35, aCobManager.Fire({{2, 9}, {5, 9}})); // 炸墓碑冒出的僵尸
+        Connect(wave, 601 - 100 - 83, aCobManager.Fire({{1, 8.3}, {4, 8.3}});
+                Delay(100, ACard(AICE_SHROOM, {{1, 9}, {2, 9}, {3, 9}, {4, 9}, {5, 9}}))); // 冰杀小偷
+        Connect(wave, 601, aCobManager.Fire({{2, 8.2}, {5, 8.2}}));
+        // 第 20 波手动收尾
+    }
 }

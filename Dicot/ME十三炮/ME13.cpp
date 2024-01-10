@@ -9,14 +9,14 @@
 
 ACoroutine I()
 {
-    ACard({{AFLOWER_POT, 3, 7}, {AICE_SHROOM, 3, 7}});
+    ACard({AFLOWER_POT, AICE_SHROOM}, 3, 7);
     co_await ANowDelayTime(100 + 1);
     ARemovePlant(3, 7);
 }
 
 ACoroutine II()
 {
-    ACard({{AFLOWER_POT, 3, 7}, {AM_ICE_SHROOM, 3, 7}});
+    ACard({AFLOWER_POT, AM_ICE_SHROOM}, 3, 7);
     co_await ANowDelayTime(320 + 100 + 1);
     ARemovePlant(3, 7);
 }
