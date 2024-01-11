@@ -33,9 +33,15 @@ ACoroutine TallNutKeeper()
     ACard({ALILY_PAD, ATALL_NUT}, 4, 8);
     co_await ANowDelayTime(1);
     aPlantFixer.Start(ATALL_NUT, {{3, 8}, {4, 8}}, 2000);
-    Connect(10, -599, ACard({ALILY_PAD, AUMBRELLA_LEAF}, 3, 9)); // 第 10 波刷新前种伞
-    Connect(11, 0, ARemovePlant(3, 9); ARemovePlant(3, 9));      // 第 11 波铲掉
-    Connect(20, 0, aPlantFixer.Stop());
+
+    co_await ATime(10, -599); // 第 10 波刷新前种伞
+    ACard({ALILY_PAD, AUMBRELLA_LEAF}, 3, 9);
+    co_await ATime(11, 0); // 第 11 波铲掉
+    ARemovePlant(3, 9);
+    ARemovePlant(3, 9);
+
+    co_await ATime(20, 0);
+    aPlantFixer.Stop();
 }
 
 void AScript()
