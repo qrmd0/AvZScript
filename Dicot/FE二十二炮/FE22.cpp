@@ -117,11 +117,11 @@ void AScript()
     // 连续加速波下半场对应垫材 24 炮打法, 因此激活炮要尽早生效
     // 最早为 226 可全炸巨人, 相当于 147 预判炮
     // 这里 N 相当于激活炮, 上半场 A 相当于 S
-    Connect(5, -145 + 83, ACoLaunch(DianCai));                                      // 下半场使撑杆不啃炮的最早放垫材时间; 垫上一波撑杆
-    Connect(5, -145 + 110, aCobManager.Fire(5, 7.8));                               // 下半场 D
-    Connect(5, -95 + 110, aCobManager.Fire(1, 8.8));                                // 上半场 D
-    Connect(5, -145 + 373 - 100, ACard({{ALILY_PAD, 3, 9}, {ADOOM_SHROOM, 3, 9}})); // 等效 145 预判炮
-    Connect(5, -95 + 373 - 100, ACard(ACHERRY_BOMB, 2, 9));                         // 等效 95 预判炮
+    Connect(5, -145 + 83, ACoLaunch(DianCai));                            // 下半场使撑杆不啃炮的最早放垫材时间; 垫上一波撑杆
+    Connect(5, -145 + 110, aCobManager.Fire(5, 7.8));                     // 下半场 D
+    Connect(5, -95 + 110, aCobManager.Fire(1, 8.8));                      // 上半场 D
+    Connect(5, -145 + 373 - 100, ACard({ALILY_PAD, ADOOM_SHROOM}, 3, 9)); // 等效 145 预判炮
+    Connect(5, -95 + 373 - 100, ACard(ACHERRY_BOMB, 2, 9));               // 等效 95 预判炮
 
     // PD/PDC
     // 下半场对应垫材 24 炮打法, 上半场精准之舞
@@ -203,7 +203,7 @@ void AScript()
     Connect(15, -145 + 83, ACoLaunch(DianCai));
     Connect(15, -145 + 110, aCobManager.Fire(5, 7.8));
     Connect(15, -95 + 110, aCobManager.Fire(1, 8.8));
-    Connect(15, -145 + 373 - 100, ACard({{ALILY_PAD, 4, 9}, {ADOOM_SHROOM, 4, 9}}));
+    Connect(15, -145 + 373 - 100, ACard({ALILY_PAD, ADOOM_SHROOM}, 4, 9));
     Connect(15, -95 + 373 - 100, ACard(ACHERRY_BOMB, 2, 9));
 
     // PD/PDC
