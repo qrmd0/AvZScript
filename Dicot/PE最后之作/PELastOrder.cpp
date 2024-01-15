@@ -27,6 +27,7 @@ ACoroutine DianCai()
 // 残血或被偷后自动补, 中场种伞保护, 关底大波刷出后停止修补.
 ACoroutine TallNutKeeper()
 {
+    // 开场种
     co_await ANowDelayTime(800); // TODO: 让给存冰位先
     ACard({ALILY_PAD, ATALL_NUT}, 3, 8);
     co_await ANowDelayTime(3000 + 1);
@@ -34,9 +35,10 @@ ACoroutine TallNutKeeper()
     co_await ANowDelayTime(1);
     aPlantFixer.Start(ATALL_NUT, {{3, 8}, {4, 8}}, 2000);
 
-    co_await ATime(10, -599); // 第 10 波刷新前种伞
+    // 第 10 波刷新前种伞, 第 11 波铲掉
+    co_await ATime(10, -750);
     ACard({ALILY_PAD, AUMBRELLA_LEAF}, 3, 9);
-    co_await ATime(11, 0); // 第 11 波铲掉
+    co_await ATime(11, 0);
     ARemovePlant(3, 9);
     ARemovePlant(3, 9);
 
