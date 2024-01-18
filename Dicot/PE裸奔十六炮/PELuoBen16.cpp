@@ -7,7 +7,7 @@
 #include <avz.h>
 
 // 使用宏定义简化代码
-#define Connect(wave, time, ...) AConnect(ATime(wave, time), [=] { __VA_ARGS__; })
+#define Connect(time, ...) AConnect(ATime(wave, time), [=] { __VA_ARGS__; })
 #define Delay(delayTime, ...) AConnect(ANowDelayTime(delayTime), [] { __VA_ARGS__; })
 
 // 种垫铲垫
@@ -39,22 +39,21 @@ ACoroutine Sunflower()
         ACard(ASUNFLOWER, spot);
         co_await ANowDelayTime(751 + 1);
     }
-    // 等第 20 波刷新
-    co_await ATime(20, 0);
-    // 等白字出现
+    co_await ATime(20, 0); // 等第 20 波刷新
     co_await []
-    { return AGetPvzBase()->MainObject()->Words()->MRef<int>(0x8C) == 12; };
+    { return AGetPvzBase()->MainObject()->Words()->MRef<int>(0x8C) == 12; }; // 等白字出现
     // 结尾铲
-    for (auto row : {1, 2})
+    for (auto col : {2, 5, 6})
     {
-        ARemovePlant(row, 2);
-        ARemovePlant(row, 5);
-        ARemovePlant(row, 6);
+        ARemovePlant(1, col);
+        ARemovePlant(2, col);
     }
 }
 
 void AScript()
 {
+    // ASetReloadMode(AReloadMode::MAIN_UI_OR_FIGHT_UI);
+
     ASetZombies({
         APJ_0,  // 普僵
         ACG_3,  // 撑杆
@@ -70,49 +69,51 @@ void AScript()
         AHY_32, // 红眼
     });
     ASelectCards({
-        ACOFFEE_BEAN,    // 咖啡豆
-        AICE_SHROOM,     // 寒冰菇
-        AM_ICE_SHROOM,   // 模仿寒冰菇
-        ACHERRY_BOMB,    // 樱桃炸弹
-        ASQUASH,         // 倭瓜
-        APUMPKIN,        // 南瓜头
-        ASUNFLOWER,      // 向日葵
-        ASCAREDY_SHROOM, // 胆小菇
-        ASUN_SHROOM,     // 阳光菇
-        APUFF_SHROOM,    // 小喷菇
-    });
+                     ACOFFEE_BEAN,    // 咖啡豆
+                     AICE_SHROOM,     // 寒冰菇
+                     AM_ICE_SHROOM,   // 模仿寒冰菇
+                     ACHERRY_BOMB,    // 樱桃炸弹
+                     ASQUASH,         // 倭瓜
+                     APUMPKIN,        // 南瓜头
+                     ASUNFLOWER,      // 向日葵
+                     ASCAREDY_SHROOM, // 胆小菇
+                     ASUN_SHROOM,     // 阳光菇
+                     APUFF_SHROOM,    // 小喷菇
+                 },
+                 1);
 
-    Connect(1, -599,
+    AConnect(ATime(1, -599), []
+             {
             aCobManager.AutoSetList();
             aIceFiller.Start({{3, 9}, {4, 9}, {1, 4}, {2, 4}});
-            ACoLaunch(Sunflower)); // 偷菜协程
+            ACoLaunch(Sunflower); }); // 偷菜协程
 
     // PPD|I-
     for (auto wave : {1, 3, 5, 7, 9, 10, 12, 14, 16, 18})
     {
         if (wave == 10)
         {
-            Connect(wave, -56, aCobManager.Fire({{2, 9}, {5, 9}}));
-            Connect(wave, -56 + 110, aCobManager.Fire(5, 8));
-            Connect(wave, 601 - 200 - 100, ACard(ACHERRY_BOMB, 2, 9)); // 301; 消延迟 炸小偷
+            Connect(-56, aCobManager.Fire({{2, 9}, {5, 9}}));
+            Connect(-56 + 110, aCobManager.Fire(5, 8));
+            Connect(601 - 200 - 100, ACard(ACHERRY_BOMB, 2, 9)); // 301; 消延迟 炸小偷
         }
         else
         {
-            Connect(wave, -133, aCobManager.Fire({{2, 9}, {5, 9}}));
-            Connect(wave, -133 + 110, aCobManager.Fire(5, 8));
+            Connect(-133, aCobManager.Fire({{2, 9}, {5, 9}}));
+            Connect(-133 + 110, aCobManager.Fire(5, 8));
         }
-        Connect(wave, 601 + 50 - 298, aIceFiller.Coffee()); // 353; 50cs 预判冰
+        Connect(601 + 50 - 298, aIceFiller.Coffee()); // 353; 50cs 预判冰
 
         if (wave == 9) // 第 9 波收尾
         {
-            Connect(wave, 601 - 135, ACoLaunch(DianCai_Low));
-            Connect(wave, 601 - 100, aCobManager.Fire(1, 2.4));
-            Connect(wave, 601 + 444 - 373, aCobManager.Fire(5, 7.4));
-            Connect(wave, 601 + 1200 - 200 - 373, aCobManager.Fire({{2, 9}, {5, 9}});
+            Connect(601 - 135, ACoLaunch(DianCai_Low));
+            Connect(601 - 100, aCobManager.Fire(1, 2.4));
+            Connect(601 + 444 - 373, aCobManager.Fire(5, 7.4));
+            Connect(601 + 1200 - 200 - 373, aCobManager.Fire({{2, 9}, {5, 9}});
                     Delay(220, aCobManager.Fire(5, 8.5)));
-            Connect(wave, 601 + 1200 - 133, aCobManager.Fire({{1, 2.4}, {5, 9}}));
-            Connect(wave, 601 + 1200 - 133 + 110, aCobManager.Fire(2, 9));
-            Connect(wave, 601 + 1200 + 601 - 100,
+            Connect(601 + 1200 - 133, aCobManager.Fire({{1, 2.4}, {5, 9}}));
+            Connect(601 + 1200 - 133 + 110, aCobManager.Fire(2, 9));
+            Connect(601 + 1200 + 601 - 100,
                     Delay(600, aCobManager.Fire({{2, 9}, {5, 9}}); ACoLaunch(DianCai_Up)));
         }
     }
@@ -120,21 +121,20 @@ void AScript()
     // C|Pd-PPD
     for (auto wave : {2, 4, 6, 8, 11, 13, 15, 17, 19})
     {
-        Connect(wave, -135, ACoLaunch(DianCai_Low)); // -135 放垫, 撑杆跳跃用时 180, 落地后 5 冰生效
+        Connect(-135, ACoLaunch(DianCai_Low)); // -135 放垫, 撑杆跳跃用时 180, 落地后 5 冰生效
         Connect(
-            wave, -100,
-            if (wave == 11) {
+            -100, if (wave == 11) {
                 aCobManager.Fire(1, 4); // 炸小鬼和小偷
             } else {
                 aCobManager.Fire(1, 2.4);
             });
-        Connect(wave, 444 - 373, aCobManager.Fire(5, 7.4));
-        Connect(wave, 1200 - 200 - 373, aCobManager.Fire({{2, 9}, {5, 9}});
+        Connect(444 - 373, aCobManager.Fire(5, 7.4));
+        Connect(1200 - 200 - 373, aCobManager.Fire({{2, 9}, {5, 9}});
                 Delay(220, aCobManager.Fire(5, 8.5)));
 
         if (wave == 19) // 第 19 波收尾
         {
-            Connect(wave, 1200 - 133, aCobManager.Fire({{2, 9}, {5, 9}});
+            Connect(1200 - 133, aCobManager.Fire({{2, 9}, {5, 9}});
                     Delay(350, aCobManager.Fire(1, 2.4);
                           Delay(300, aCobManager.Fire(5, 9);
                                 Delay(400, aCobManager.Fire(2, 9);
@@ -145,8 +145,8 @@ void AScript()
 
     for (auto wave : {20})
     {
-        Connect(wave, -150, aCobManager.Fire(4, 7); aIceFiller.Stop());
-        Connect(wave, -60, aCobManager.Fire({{1, 9}, {2, 9}, {5, 9}, {6, 9}}); // 等到刷新前 60cs
+        Connect(-150, aCobManager.Fire(4, 7); aIceFiller.Stop());
+        Connect(-60, aCobManager.Fire({{1, 9}, {2, 9}, {5, 9}, {6, 9}}); // 等到刷新前 60cs
                 Delay(108, aCobManager.Fire({{1, 9}, {2, 9}, {5, 9}, {6, 9}});
                       Delay(180, aCobManager.Fire(1, 4)))); // 尾炸小偷
         // 第 20 波手动收尾

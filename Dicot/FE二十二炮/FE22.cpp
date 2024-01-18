@@ -27,6 +27,8 @@ ACoroutine DianCai()
 
 void AScript()
 {
+    // ASetReloadMode(AReloadMode::MAIN_UI_OR_FIGHT_UI);
+
     AMRef<unsigned short>(0x0041a68d) = 0xd231; // 浓雾透视
 
     ASetZombies({
@@ -44,17 +46,18 @@ void AScript()
         AHY_32, // 红眼
     });
     ASelectCards({
-        AICE_SHROOM,     // 寒冰菇
-        AM_ICE_SHROOM,   // 模仿寒冰菇
-        ADOOM_SHROOM,    // 毁灭菇
-        ALILY_PAD,       // 荷叶
-        ACHERRY_BOMB,    // 樱桃炸弹
-        AWALL_NUT,       // 坚果
-        AFLOWER_POT,     // 花盆
-        ASCAREDY_SHROOM, // 胆小菇
-        ASUN_SHROOM,     // 阳光菇
-        APUFF_SHROOM,    // 小喷菇
-    });
+                     AICE_SHROOM,     // 寒冰菇
+                     AM_ICE_SHROOM,   // 模仿寒冰菇
+                     ADOOM_SHROOM,    // 毁灭菇
+                     ALILY_PAD,       // 荷叶
+                     ACHERRY_BOMB,    // 樱桃炸弹
+                     AWALL_NUT,       // 坚果
+                     AFLOWER_POT,     // 花盆
+                     ASCAREDY_SHROOM, // 胆小菇
+                     ASUN_SHROOM,     // 阳光菇
+                     APUFF_SHROOM,    // 小喷菇
+                 },
+                 1);
 
     Connect(1, -599, aCobManager.SetList({
                          {1, 1},
