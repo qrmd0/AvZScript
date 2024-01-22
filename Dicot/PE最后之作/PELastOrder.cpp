@@ -36,7 +36,7 @@ ACoroutine TallNutKeeper()
     aPlantFixer.Start(ATALL_NUT, {{3, 8}, {4, 8}}, 2000);
 
     // 第 10 波刷新前种伞, 第 11 波铲掉
-    co_await ATime(10, -500);
+    co_await ATime(10, -200);
     ACard({ALILY_PAD, AUMBRELLA_LEAF}, 3, 9);
     co_await ATime(11, 0);
     ARemovePlant(3, 9);
@@ -121,15 +121,14 @@ void AScript()
     for (auto wave : {3, 6, 9, 11, 14, 17})
     {
         Connect(1300 - 200 - 373, aCobManager.Fire({{2, 8.8}, {5, 8.8}}));
-        Connect(1300 + 20 - 298, aIceFiller.Coffee());                           // 20cs 预判冰
-        Connect(1300 - 200 - 373 + 357, aCobManager.Fire({{1, 2.4}, {5, 2.4}})); // 减速尾炸
+        Connect(1300 + 20 - 298, aIceFiller.Coffee());                               // 20cs 预判冰
+        Connect(1300 - 200 - 373 + 349, aCobManager.Fire({{1, 2.425}, {5, 2.425}})); // 减速尾炸
         if (wave == 9)
         {
-            Connect(1300 + 180, aCobManager.Fire({{1, 7.2}, {5, 7.2}})); // 可省略
+            // Connect(1300 + 180, aCobManager.Fire({{1, 7.2}, {5, 7.2}})); // 可省略
             Connect(1300 + 1662 - 200 - 373, aCobManager.Fire({{2, 8.8}, {5, 8.8}});
-                    Delay(81, ACoLaunch(DianCai);
-                          Delay(220 - 81, aCobManager.Fire({{1, 7.8}, {5, 7.8}}))));
-            Connect(3400, ACoLaunch(DianCai); aCobManager.Fire({{1, 9}, {5, 9}}));
+                    Delay(81, ACoLaunch(DianCai); aPainter.Draw(AText("手动收尾！", 400, 300), 500);
+                          Delay(220 - 81, aCobManager.Fire({{1, 7.8}, {5, 7.8}}); aCobManager.Skip(4))));
         }
     }
 
@@ -147,16 +146,12 @@ void AScript()
     {
         Connect(-15, aCobManager.Fire({{2, 9}, {5, 9}}));
         Connect(-15 + 107, aCobManager.Fire({{1, 7.625}, {5, 7.625}}));
-        if (wave != 19)
+        Connect(601 + 20 - 298, aIceFiller.Coffee()); // 20cs 预判冰
+        if (wave == 19)
         {
-            Connect(601 + 20 - 298, aIceFiller.Coffee()); // 20cs 预判冰
-        }
-        else
-        {
-            Connect(601 + 130, aIceFiller.Coffee());
-            Connect(601 + 1300 - 150 - 373, aCobManager.Fire({{2, 8.8}, {5, 8.8}});
-                    Delay(220, aCobManager.Fire({{1, 7.4}, {5, 7.4}})));
-            Connect(2300, ACoLaunch(DianCai); aCobManager.Fire({{1, 9}, {5, 9}}));
+            Connect(601 + 1300 - 200 - 373, aPainter.Draw(AText("手动收尾！", 400, 300), 500);
+                    Delay(100, aCobManager.Fire({{2, 8.8}, {5, 8.8}}); // 尾炸炮时机微调
+                          Delay(220, aCobManager.Fire({{1, 7.5}, {5, 7.5}}); aCobManager.Skip(3))));
         }
     }
 

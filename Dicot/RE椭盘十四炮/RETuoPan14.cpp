@@ -10,20 +10,7 @@
 #define Connect(time, ...) AConnect(ATime(wave, time), [=] { __VA_ARGS__; })
 #define Delay(delayTime, ...) AConnect(ANowDelayTime(delayTime), [] { __VA_ARGS__; })
 
-// 检测 3 路是否漏炸跳跳
-bool IsMissTiaoTiao()
-{
-    for (auto &&zombie : aAliveZombieFilter)
-    {
-        if (zombie.Row() == 2 && zombie.Type() == APOGO_ZOMBIE && zombie.ExistTime() >= 100)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-// 检测 1 路是否出红眼
+// 检查 1 路是否出红眼
 bool IsSpawnHongYan()
 {
     for (auto &&zombie : aAliveZombieFilter)
@@ -111,7 +98,8 @@ void AScript()
             Connect(1300 - 200 - 387, aCobManager.RoofFire(4, 8.2));           // 713
             Connect(1780 - 200 - 387, aCobManager.RoofFire({{2, 9}, {4, 9}})); // 1193
             Connect(
-                1780 - 200 - 100, if (IsMissTiaoTiao()) { ACard({AFLOWER_POT, AJALAPENO}, 3, 9); });
+                1780 - 200 - 100,
+                if (AIsZombieExist(APOGO_ZOMBIE, 3)) { ACard({AFLOWER_POT, AJALAPENO}, 3, 9); Delay(100, ARemovePlant(3, 9)); });
             Connect(1780 + 11 - 298, aIceFiller.Coffee(); AIce3(298)); // 1493
         }
 
@@ -150,13 +138,15 @@ void AScript()
             // 收尾
             Connect(1705 - 200 - 298, ACard({AFLOWER_POT, ADOOM_SHROOM, ACOFFEE_BEAN}, 3, 9));
             Connect(
-                1300 - 200, if (!IsSpawnHongYan()) // TODO: 如果 1 路没有出红眼
+                1300 - 200,
+                if (!IsSpawnHongYan()) // TODO: 如果 1 路没有出红眼
                 {
                     Connect(1705 - 200 - 298 + 751, ACard({AFLOWER_POT, ASQUASH}, 2, 9);
                             Delay(183, ARemovePlant(2, 9); ARemovePlant(2, 9)));
-                    Connect(1705 - 200 + 230 - 387, aCobManager.RoofFire({{2, 7.4}, {4, 8.5}}));       // 拦截
-                    Connect(1705 - 200 + 230 + 230 - 387, aCobManager.RoofFire({{3, 8.5}, {4, 8.5}})); // 拦截
-                } else {
+                    Connect(1705 - 200 + 230 - 387, aCobManager.RoofFire({{2, 7.4}, {4, 8.5}})); // 拦截
+                    Connect(1705 - 200 + 230 + 230 - 387, aCobManager.RoofFire({{3, 8.5}, {4, 8.5}}));
+                } else // 如果 1 路有出红眼
+                {
                     Connect(1705 - 200 + 230 - 387, aCobManager.RoofFire({{2, 8.5}, {4, 8.5}}));       // 拦截
                     Connect(1705 - 200 + 230 + 230 - 387, aCobManager.RoofFire({{2, 8.5}, {4, 8.5}})); // 拦截
                 });
