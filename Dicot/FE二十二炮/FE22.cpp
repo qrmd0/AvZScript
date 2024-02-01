@@ -3,7 +3,6 @@
  * 出处: None
  * 节奏: C9u-57s: IPP-PPDD|PSD/PDC|IPP-PPDD|PSD/PDC|N+AD/DC|PD/PDC|PSD/PDC, (13.5|6|13.5|6|6|6|6)
  */
-
 #include <avz.h>
 #define Connect(wave, time, ...) AConnect(ATime(wave, time), [] { __VA_ARGS__; }) // 使用宏定义简化代码
 
@@ -46,18 +45,17 @@ void AScript()
         AHY_32, // 红眼
     });
     ASelectCards({
-                     AICE_SHROOM,     // 寒冰菇
-                     AM_ICE_SHROOM,   // 模仿寒冰菇
-                     ADOOM_SHROOM,    // 毁灭菇
-                     ALILY_PAD,       // 荷叶
-                     ACHERRY_BOMB,    // 樱桃炸弹
-                     AWALL_NUT,       // 坚果
-                     AFLOWER_POT,     // 花盆
-                     ASCAREDY_SHROOM, // 胆小菇
-                     ASUN_SHROOM,     // 阳光菇
-                     APUFF_SHROOM,    // 小喷菇
-                 },
-                 1);
+        AICE_SHROOM,     // 寒冰菇
+        AM_ICE_SHROOM,   // 模仿寒冰菇
+        ADOOM_SHROOM,    // 毁灭菇
+        ALILY_PAD,       // 荷叶
+        ACHERRY_BOMB,    // 樱桃炸弹
+        AWALL_NUT,       // 坚果
+        AFLOWER_POT,     // 花盆
+        ASCAREDY_SHROOM, // 胆小菇
+        ASUN_SHROOM,     // 阳光菇
+        APUFF_SHROOM,    // 小喷菇
+    });
 
     Connect(1, -599, aCobManager.SetList({
                          {1, 1},

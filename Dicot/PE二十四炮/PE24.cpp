@@ -3,9 +3,8 @@
  * 出处: https://tieba.baidu.com/p/991306518
  * 节奏: P6: PPDD|PPI|PPSSDD|PPDD|PPI|PPSSDD
  */
-
 #include <avz.h>
-#define Connect(time, ...) AConnect(ATime(wave, time), [] { __VA_ARGS__; }) // 使用宏定义简化代码
+#define Connect(wave, time, ...) AConnect(ATime(wave, time), [] { __VA_ARGS__; }) // 使用宏定义简化代码
 
 void AScript()
 {
@@ -26,61 +25,62 @@ void AScript()
         AHY_32, // 红眼
     });
     ASelectCards({
-                     AM_ICE_SHROOM,   // 模仿寒冰菇
-                     AICE_SHROOM,     // 寒冰菇
-                     ACOFFEE_BEAN,    // 咖啡豆
-                     APUMPKIN,        // 南瓜头
-                     AWALL_NUT,       // 坚果
-                     ASQUASH,         // 倭瓜
-                     AFLOWER_POT,     // 花盆
-                     ASCAREDY_SHROOM, // 胆小菇
-                     ASUN_SHROOM,     // 阳光菇
-                     APUFF_SHROOM,    // 小喷菇
-                 },
-                 1);
+        AM_ICE_SHROOM,   // 模仿寒冰菇
+        AICE_SHROOM,     // 寒冰菇
+        ACOFFEE_BEAN,    // 咖啡豆
+        APUMPKIN,        // 南瓜头
+        AWALL_NUT,       // 坚果
+        ASQUASH,         // 倭瓜
+        AFLOWER_POT,     // 花盆
+        ASCAREDY_SHROOM, // 胆小菇
+        ASUN_SHROOM,     // 阳光菇
+        APUFF_SHROOM,    // 小喷菇
+    });
 
-    AConnect(ATime(1, -599), []
-             {
+    Connect(1, -599,
             aCobManager.AutoSetList();
-            aIceFiller.Start({{4, 9}}); });
+            aIceFiller.Start({{4, 9}}));
 
-    // 精准之舞 PPDD
-    for (auto wave : {1, 4, 7, 11, 14, 17})
+    for (int wave = 1; wave < 21; ++wave)
     {
-        Connect(-14, aCobManager.Fire({{2, 9}, {5, 9}}));
-        Connect(-14 + 107, aCobManager.Fire({{1, 7.7}, {5, 7.7}}));
-    }
-
-    // 冰之旋舞 PPI
-    for (auto wave : {2, 5, 8, 12, 15, 18})
-    {
-        Connect(-95, aCobManager.Fire({{2, 9}, {5, 9}}));
-        Connect(-95 + 373 - 100 - 198, aIceFiller.Coffee()); // 冰同步于炮生效
-    }
-
-    // 六神乱舞 PPSSDD
-    for (auto wave : {3, 6, 9, 13, 16, 19})
-    {
-        Connect(-95, aCobManager.Fire({{2, 9}, {5, 9}, {2, 9}, {5, 9}}));
-        Connect(-95 + 108, aCobManager.Fire({{1, 8.8}, {5, 8.8}}));
-        if (wave == 9 || wave == 19) // 收尾
+        // 精准之舞 PPDD
+        if (ARangeIn(wave, {1, 4, 7, 11, 14, 17}))
         {
-            Connect(601 - 15, aCobManager.Fire({{2, 9}, {5, 9}}));
+            Connect(wave, -14, aCobManager.Fire({{2, 9}, {5, 9}}));
+            Connect(wave, -14 + 107, aCobManager.Fire({{1, 7.7}, {5, 7.7}}));
         }
-    }
 
-    // 大波推迟 PPSSDD
-    for (auto wave : {10})
-    {
-        Connect(-56, aCobManager.Fire({{2, 9}, {5, 9}, {2, 9}, {5, 9}}));
-        Connect(-56 + 108, aCobManager.Fire({{1, 8.8}, {5, 8.8}}));
-    }
+        // 冰之旋舞 PPI
+        else if (ARangeIn(wave, {2, 5, 8, 12, 15, 18}))
+        {
+            Connect(wave, -95, aCobManager.Fire({{2, 9}, {5, 9}}));
+            Connect(wave, -95 + 373 - 100 - 198, aIceFiller.Coffee()); // 冰同步于炮生效
+        }
 
-    for (auto wave : {20})
-    {
-        Connect(-150, aCobManager.Fire({{4, 6}, {4, 8}}));                      // 炮炸珊瑚
-        Connect(-150 + 90, aCobManager.Fire({{1, 9}, {2, 9}, {5, 9}, {6, 9}})); // -60
-        Connect(-150 + 90 + 108, aCobManager.Fire({{1, 9}, {2, 9}, {5, 9}, {6, 9}}));
-        // 第 20 波手动收尾
+        // 六神乱舞 PPSSDD
+        else if (ARangeIn(wave, {3, 6, 9, 13, 16, 19}))
+        {
+            Connect(wave, -95, aCobManager.Fire({{2, 9}, {5, 9}, {2, 9}, {5, 9}}));
+            Connect(wave, -95 + 108, aCobManager.Fire({{1, 8.8}, {5, 8.8}}));
+            if (ARangeIn(wave, {9, 19})) // 收尾
+            {
+                Connect(wave, 601 - 15, aCobManager.Fire({{2, 9}, {5, 9}}));
+            }
+        }
+
+        // 大波推迟 PPSSDD
+        else if (wave == 10)
+        {
+            Connect(wave, -56, aCobManager.Fire({{2, 9}, {5, 9}, {2, 9}, {5, 9}}));
+            Connect(wave, -56 + 108, aCobManager.Fire({{1, 8.8}, {5, 8.8}}));
+        }
+
+        else if (wave == 20)
+        {
+            Connect(wave, -150, aCobManager.Fire({{4, 6}, {4, 8}}));                      // 炮炸珊瑚
+            Connect(wave, -150 + 90, aCobManager.Fire({{1, 9}, {2, 9}, {5, 9}, {6, 9}})); // -60
+            Connect(wave, -150 + 90 + 108, aCobManager.Fire({{1, 9}, {2, 9}, {5, 9}, {6, 9}}));
+            // 第 20 波手动收尾
+        }
     }
 }
