@@ -14,9 +14,10 @@ void AScript()
         APJ_0,  // 普僵
         ACG_3,  // 撑杆
         AWW_8,  // 舞王
-        AXC_15, // 小丑
+        ABC_12, // 冰车
         AQQ_16, // 气球
         AKG_17, // 矿工
+        AXC_15, // 小丑
         ATT_18, // 跳跳
         ABJ_20, // 蹦极
         AFT_21, // 扶梯
@@ -61,15 +62,12 @@ void AScript()
             if (wave == 2)
             {
                 Connect(wave, 10 + 400, ACard(ASQUASH, 3, 9)); // 压冰车护存冰
+                Connect(wave, 750, ACard(APUFF_SHROOM, 3, 8)); // 垫撑杆
+                Connect(wave, 750 + 100, ARemovePlant(3, 8));
             }
             if (wave == 11)
             {
                 Connect(wave, 10 + 400 - 100, ACard(ACHERRY_BOMB, 3, 8)); // 炸冰车小偷护存冰
-            }
-            if (wave == 2)
-            {
-                Connect(wave, 750, ACard(APUFF_SHROOM, 3, 8)); // 垫撑杆
-                Connect(wave, 750 + 100, ARemovePlant(3, 8));
             }
             Connect(wave, 1437 - 200 - 373, aCobManager.Fire({{2, 8.7}, {4, 8.7}}));
             Connect(wave, 1437 + 20 - 298, aIceFiller.Coffee());
