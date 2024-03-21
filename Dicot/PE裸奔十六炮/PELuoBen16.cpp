@@ -30,23 +30,20 @@ ACoroutine DianCai_Low()
 // 偷菜
 ACoroutine Sunflower()
 {
-    using std::vector;
-    vector<vector<APosition>> sunflower_spots = {{{1, 2}}, {{1, 5}}, {{1, 6}}, {{2, 2}}, {{2, 5}}, {{2, 6}}};
+    std::vector<AGrid> sunflower_spots = {{1, 2}, {1, 5}, {1, 6}, {2, 2}, {2, 5}, {2, 6}};
     // 开局种
     for (auto spot : sunflower_spots)
     {
-        ACard(ASUNFLOWER, spot);
+        ACard(ASUNFLOWER, spot.row, spot.col);
         co_await ANowDelayTime(751 + 1);
     }
-
     co_await ATime(20, 0); // 等第 20 波刷新
     co_await []
-    { return AGetPvzBase()->MainObject()->Words()->MRef<int>(0x8C) == 12; }; // 等白字出现
+    { return AGetMainObject()->Words()->MRef<int>(0x8C) == 12; }; // 等白字出现
     // 结尾铲
-    for (float col : {2, 5, 6})
+    for (auto spot : sunflower_spots)
     {
-        ARemovePlant(1, col);
-        ARemovePlant(2, col);
+        ARemovePlant(spot.row, spot.col);
     }
 }
 
