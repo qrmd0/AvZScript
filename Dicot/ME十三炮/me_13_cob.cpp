@@ -3,7 +3,6 @@
  * 出处: https://tieba.baidu.com/p/5288033944
  * 节奏: C5u-35s: PPD|PPD|PPD|IP-PPD, (6|6|6|17)
  */
-
 #include <avz.h>
 #define Connect(wave, time, ...) AConnect(ATime(wave, time), [] { __VA_ARGS__; }) // 使用宏定义简化代码
 
@@ -23,6 +22,8 @@ ACoroutine II()
 
 void AScript()
 {
+    // ASetReloadMode(AReloadMode::MAIN_UI_OR_FIGHT_UI);
+
     ASetZombies({
         APJ_0,  // 普僵
         ACG_3,  // 撑杆
@@ -78,27 +79,27 @@ void AScript()
         }
 
         // IP-PPD
-        else if (wave == 4 || wave == 8 || wave == 10 || wave == 14 || wave == 18)
+        else if (ARangeIn(wave, {4, 8, 10, 14, 18}))
         {
-            if (wave == 4 || wave == 10 || wave == 18)
+            if (ARangeIn(wave, {4, 10, 18}))
             {
                 Connect(wave, 5 - 100, ACoLaunch(I)); // 本波原版冰
             }
             Connect(wave, 100, aCobManager.RoofFire(5, 8));
-            Connect(wave, 1700 - 200 - 373, aCobManager.RoofFire({{2, 8.5}, {4, 8.5}}));
-            Connect(wave, 1700 - 200 - 373 + 230, aCobManager.RoofFire(2, 7)); // 减速延迟 230 炸小鬼
+            Connect(wave, 1700 - 200 - 387, aCobManager.RoofFire({{2, 8.5}, {4, 8.5}}));
+            Connect(wave, 1700 - 200 - 387 + 230, aCobManager.RoofFire(2, 7)); // 减速延迟 230 炸小鬼
         }
 
         // PPD
-        else // wave 1, 2, 3, 5, 6, 7, 9, 11, 12, 13, 15, 16, 17, 19
+        else // else if (ARangeIn(wave, {1, 2, 3, 5, 6, 7, 9, 11, 12, 13, 15, 16, 17, 19}))
         {
             Connect(wave, 10, aCobManager.RoofFire({{2, 8.5}, {4, 8.5}})); // 刷新后
             Connect(wave, 10 + 130, aCobManager.RoofFire(2, 7.6));         // 原速延迟 130 炸小鬼
-            if (wave == 7 || wave == 13)
+            if (ARangeIn(wave, {7, 13}))
             {
                 Connect(wave, 601 + 5 - 100 - 320, ACoLaunch(II)); // 下一波的复制冰
             }
-            if (wave == 9 || wave == 19) // 收尾
+            if (ARangeIn(wave, {9, 19})) // 收尾
             {
                 Connect(wave, 601, aCobManager.RoofFire({{2, 8.5}, {4, 8.5}}));
                 Connect(wave, 601 + 130, aCobManager.RoofFire(2, 7.6));

@@ -3,7 +3,6 @@
  * 出处: None
  * 节奏: C9u-57s: IPP-PPDD|PSD/PDC|IPP-PPDD|PSD/PDC|N+AD/DC|PD/PDC|PSD/PDC, (13.5|6|13.5|6|6|6|6)
  */
-
 #include <avz.h>
 #define Connect(wave, time, ...) AConnect(ATime(wave, time), [] { __VA_ARGS__; }) // 使用宏定义简化代码
 
@@ -27,6 +26,8 @@ ACoroutine DianCai()
 
 void AScript()
 {
+    // ASetReloadMode(AReloadMode::MAIN_UI_OR_FIGHT_UI);
+
     AMRef<unsigned short>(0x0041a68d) = 0xd231; // 浓雾透视
 
     ASetZombies({
