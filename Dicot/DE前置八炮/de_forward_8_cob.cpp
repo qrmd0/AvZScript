@@ -4,33 +4,37 @@
  * 节奏: ch5: PP|I-PP|IPP-PP, (601|1437|1437)
  */
 #include <avz.h>
-#define Connect(wave, time, ...) AConnect(ATime(wave, time), [] { __VA_ARGS__; }) // 使用宏定义简化代码
+
+// 连接(使用宏定义简化)
+#define Connect(wave, time, ...) AConnect(ATime(wave, time), [=] { __VA_ARGS__; })
+
+ALogger<AConsole> consoleLogger; // 日志对象-控制台
 
 void AScript()
 {
     // ASetReloadMode(AReloadMode::MAIN_UI_OR_FIGHT_UI);
 
     ASetZombies({
-        APJ_0,  // 普僵
-        ACG_3,  // 撑杆
-        AWW_8,  // 舞王
-        ABC_12, // 冰车
-        AXC_15, // 小丑
-        AQQ_16, // 气球
-        AKG_17, // 矿工
-        ATT_18, // 跳跳
-        ABJ_20, // 蹦极
-        AFT_21, // 扶梯
-        ATL_22, // 投篮
-        ABY_23, // 白眼
-        AHY_32, // 红眼
+        AZOMBIE,                 // 普僵
+        APOLE_VAULTING_ZOMBIE,   // 撑杆
+        ADANCING_ZOMBIE,         // 舞王
+        AZOMBONI,                // 冰车
+        AJACK_IN_THE_BOX_ZOMBIE, // 小丑
+        ABALLOON_ZOMBIE,         // 气球
+        ADIGGER_ZOMBIE,          // 矿工
+        APOGO_ZOMBIE,            // 跳跳
+        ABUNGEE_ZOMBIE,          // 蹦极
+        ALADDER_ZOMBIE,          // 扶梯
+        ACATAPULT_ZOMBIE,        // 篮球
+        AGARGANTUAR,             // 白眼
+        AGIGA_GARGANTUAR,        // 红眼
     });
     ASelectCards({
         ACOFFEE_BEAN,    // 咖啡豆
         AICE_SHROOM,     // 寒冰菇
-        AM_ICE_SHROOM,   // 模仿寒冰菇
-        ACHERRY_BOMB,    // 樱桃炸弹
-        ASQUASH,         // 倭瓜
+        AM_ICE_SHROOM,   // 复制冰
+        ACHERRY_BOMB,    // 樱桃
+        ASQUASH,         // 窝瓜
         AWALL_NUT,       // 坚果
         AFLOWER_POT,     // 花盆
         ASCAREDY_SHROOM, // 胆小菇
@@ -44,6 +48,8 @@ void AScript()
 
     for (int wave = 1; wave < 21; ++wave)
     {
+        Connect(wave, -200, consoleLogger.Info("当前操作波次: {}", wave));
+
         // PP
         if (ARangeIn(wave, {1, 4, 7, 10, 13, 16, 19}))
         {
@@ -52,7 +58,8 @@ void AScript()
             if (wave == 19)
             {
                 Connect(wave, 601 + 1437 - 200 - 373, aCobManager.Fire({{2, 8.7}, {4, 8.7}}));
-                Connect(wave, 4500 - 200 - 373, aCobManager.Fire({{2, 8.4}, {4, 8.4}}));
+                Connect(wave, /*601 + 1437 - 150*/ 4500 - 200 - 373,
+                        aCobManager.Fire({{2, 8.4}, {4, 8.4}}));
             }
         }
 
@@ -81,7 +88,8 @@ void AScript()
             if (wave == 9)
             {
                 Connect(wave, 1437 - 40, aCobManager.Fire({{2, 8.7}, {4, 8.7}}));
-                Connect(wave, 4500 - 200 - 373, aCobManager.Fire({{2, 8.4}, {4, 8.4}}));
+                Connect(wave, /*1437 + 601 + 1437 - 200 - 373*/ 4500 - 200 - 373,
+                        aCobManager.Fire({{2, 8.4}, {4, 8.4}}));
             }
         }
 
@@ -89,8 +97,10 @@ void AScript()
         {
             Connect(wave, -60, aCobManager.Fire({{1, 9}, {2, 9}, {4, 9}, {5, 9}}));
             Connect(wave, -60 + 108, aCobManager.Fire({{1, 8.8}, {4, 8.8}}));
-            Connect(wave, 300, aIceFiller.Coffee(); aIceFiller.SetIceSeedList({AM_ICE_SHROOM})); // 冰杀小偷; 最后一个存冰
-            // 第 20 波手动收尾
+            Connect(wave, 300,
+                    aIceFiller.Coffee();                        // 冰杀小偷
+                    aIceFiller.SetIceSeedList({AM_ICE_SHROOM}); // 最后一个存冰
+                    consoleLogger.Info("第 {} 波手动收尾.", wave));
         }
     }
 }

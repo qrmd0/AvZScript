@@ -4,7 +4,13 @@
  * 节奏: C9u-57s: IPP-PPDD|PSD/PDC|IPP-PPDD|PSD/PDC|N+AD/DC|PD/PDC|PSD/PDC, (13.5|6|13.5|6|6|6|6)
  */
 #include <avz.h>
-#define Connect(wave, time, ...) AConnect(ATime(wave, time), [] { __VA_ARGS__; }) // 使用宏定义简化代码
+
+// 连接(使用宏定义简化)
+#define Connect(wave, time, ...) AConnect(ATime(wave, time), [=] { __VA_ARGS__; })
+#define CoConnect(wave, time, ...) AConnect(ATime(wave, time), [=]() -> ACoroutine { __VA_ARGS__; })
+#define Delay(delayTime) co_await ANowDelayTime(delayTime)
+
+ALogger<AConsole> consoleLogger; // 日志对象-控制台
 
 // Cannon Fodder
 // 垫材 花盆/胆小菇 阳光菇/小喷菇
@@ -19,9 +25,8 @@ ACoroutine DianCai()
     {
         ACard({{AFLOWER_POT, 5, 9}, {ASCAREDY_SHROOM, 6, 9}});
     }
-    co_await ANowDelayTime(30);
-    ARemovePlant(5, 9);
-    ARemovePlant(6, 9);
+    Delay(30);
+    ARemovePlant({{5, 9}, {6, 9}});
 }
 
 void AScript()
@@ -31,58 +36,64 @@ void AScript()
     AMRef<unsigned short>(0x0041a68d) = 0xd231; // 浓雾透视
 
     ASetZombies({
-        APJ_0,  // 普僵
-        ACG_3,  // 撑杆
-        AWW_8,  // 舞王
-        ABC_12, // 冰车
-        AHT_14, // 海豚
-        AKG_17, // 矿工
-        ATT_18, // 跳跳
-        ABJ_20, // 蹦极
-        AFT_21, // 扶梯
-        ATL_22, // 投篮
-        ABY_23, // 白眼
-        AHY_32, // 红眼
+        AZOMBIE,               // 普僵
+        APOLE_VAULTING_ZOMBIE, // 撑杆
+        ADANCING_ZOMBIE,       // 舞王
+        AZOMBONI,              // 冰车
+        ADOLPHIN_RIDER_ZOMBIE, // 海豚
+        ADIGGER_ZOMBIE,        // 矿工
+        APOGO_ZOMBIE,          // 跳跳
+        ABUNGEE_ZOMBIE,        // 蹦极
+        ALADDER_ZOMBIE,        // 扶梯
+        ACATAPULT_ZOMBIE,      // 篮球
+        AGARGANTUAR,           // 白眼
+        AGIGA_GARGANTUAR,      // 红眼
     });
     ASelectCards({
         AICE_SHROOM,     // 寒冰菇
-        AM_ICE_SHROOM,   // 模仿寒冰菇
+        AM_ICE_SHROOM,   // 模仿冰
         ADOOM_SHROOM,    // 毁灭菇
-        ALILY_PAD,       // 荷叶
-        ACHERRY_BOMB,    // 樱桃炸弹
+        ALILY_PAD,       // 睡莲
+        ACHERRY_BOMB,    // 樱桃
         AWALL_NUT,       // 坚果
         AFLOWER_POT,     // 花盆
-        ASCAREDY_SHROOM, // 胆小菇
-        ASUN_SHROOM,     // 阳光菇
-        APUFF_SHROOM,    // 小喷菇
+        ASCAREDY_SHROOM, // 胆小
+        ASUN_SHROOM,     // 阳光
+        APUFF_SHROOM,    // 小喷
     });
 
-    Connect(1, -599, aCobManager.SetList({
-                         {1, 1},
-                         {2, 1},
-                         {3, 1},
-                         {4, 1},
-                         {5, 1},
-                         {6, 1},
-                         {1, 3},
-                         {2, 3},
-                         {3, 3},
-                         {4, 3},
-                         {5, 3},
-                         {6, 3},
-                         {1, 5},
-                         {2, 5},
-                         {3, 5},
-                         {4, 5},
-                         {5, 5},
-                         {6, 5},
-                         {1, 7},
-                         {2, 7},
-                         // {3, 7},
-                         // {4, 7},
-                         {5, 7},
-                         {6, 7},
-                     }));
+    Connect(1, -599,
+            aCobManager.SetList({
+                {1, 1},
+                {2, 1},
+                {3, 1},
+                {4, 1},
+                {5, 1},
+                {6, 1},
+                {1, 3},
+                {2, 3},
+                {3, 3},
+                {4, 3},
+                {5, 3},
+                {6, 3},
+                {1, 5},
+                {2, 5},
+                {3, 5},
+                {4, 5},
+                {5, 5},
+                {6, 5},
+                {1, 7},
+                {2, 7},
+                // {3, 7},
+                // {4, 7},
+                {5, 7},
+                {6, 7},
+            }));
+
+    for (int wave = 1; wave < 21; ++wave)
+    {
+        Connect(wave, -200, consoleLogger.Info("当前操作波次: {}", wave));
+    }
 
     // IPP-PPDD
     Connect(1, 5 - 100, ACard(AICE_SHROOM, 2, 9));                              // 本波 5cs 预判冰
@@ -153,11 +164,12 @@ void AScript()
     // 收尾波
     Connect(9, -133, aCobManager.Fire({{1, 9}, {5, 9}}));
     Connect(9, -15, aCobManager.Fire({{1, 9}, {5, 9}}));
-    Connect(9, 1300 - 200 - 373, aCobManager.Fire({{2, 9}, {5, 9}})); // 1350->1300
-    Connect(9, 1300 - 200 - 373 + 220, aCobManager.Fire({{1, 9}, {5, 9}}));
-    Connect(9, 1300 - 200 - 373 + 220 + 220, aCobManager.Fire({{1, 9}, {5, 9}}));
-    Connect(9, 1300 - 200 - 373 + 220 + 220 + 600, aCobManager.Fire({{2, 9}, {5, 9}}));       // 等冰菇 CD
-    Connect(9, 1300 - 200 - 373 + 220 + 220 + 600 + 700, aCobManager.Fire({{2, 9}, {5, 9}})); // 清伴舞
+    CoConnect(9, 1300 - 200 - 373, aCobManager.Fire({{2, 9}, {5, 9}}); // 1350->1300
+              Delay(220); aCobManager.Fire({{1, 9}, {5, 9}});
+              Delay(220); aCobManager.Fire({{1, 9}, {5, 9}});
+              Delay(600); aCobManager.Fire({{2, 9}, {5, 9}}); // 等冰菇 CD
+              Delay(700); aCobManager.Fire({{2, 9}, {5, 9}}); // 清伴舞
+    );
 
     // PSD/PDC
     // 上半场 PSD, 下半场收撑杆省垫材
@@ -236,17 +248,18 @@ void AScript()
     // 收尾波
     Connect(19, -133, aCobManager.Fire({{1, 9}, {5, 9}}));
     Connect(19, -15, aCobManager.Fire({{1, 9}, {5, 9}}));
-    Connect(19, 1300 - 200 - 373, aCobManager.Fire({{2, 9}, {5, 9}})); // 1350->1300
-    Connect(19, 1300 - 200 - 373 + 220, aCobManager.Fire({{1, 9}, {5, 9}}));
-    Connect(19, 1300 - 200 - 373 + 220 + 220, aCobManager.Fire({{1, 9}, {5, 9}}));
-    Connect(19, 1300 - 200 - 373 + 220 + 220 + 600, aCobManager.Fire({{2, 9}, {5, 9}}));       // 等冰菇 CD
-    Connect(19, 1300 - 200 - 373 + 220 + 220 + 600 + 700, aCobManager.Fire({{2, 9}, {5, 9}})); // 清伴舞
+    CoConnect(19, 1300 - 200 - 373, aCobManager.Fire({{2, 9}, {5, 9}}); // 1350->1300
+              Delay(220); aCobManager.Fire({{1, 9}, {5, 9}});
+              Delay(220); aCobManager.Fire({{1, 9}, {5, 9}});
+              Delay(600); aCobManager.Fire({{2, 9}, {5, 9}}); // 等冰菇 CD
+              Delay(700); aCobManager.Fire({{2, 9}, {5, 9}}); // 清伴舞
+    );
 
     // PP-PPPPPPPP
-    Connect(20, -150, aCobManager.Fire(4, 7));            // 炮炸珊瑚
-    Connect(20, -60, aCobManager.Fire({{2, 9}, {5, 9}})); // 等到刷新前 60cs
-    Connect(20, -60 + 108, aCobManager.Fire({{1, 8.8}, {5, 8.8}}));
-    Connect(20, -60 + 108 + 108, aCobManager.Fire({{1, 8.6}, {5, 8.6}}));
-    Connect(20, -60 + 108 + 108 + 108, aCobManager.Fire({{2, 8.4}, {5, 8.4}})); // 炸小偷
-    // 最后一大波手动收尾
+    Connect(20, -150, aCobManager.Fire(4, 7));             // 炮炸珊瑚
+    CoConnect(20, -60, aCobManager.Fire({{2, 9}, {5, 9}}); // 等到刷新前 60cs
+              Delay(108); aCobManager.Fire({{1, 8.8}, {5, 8.8}});
+              Delay(108); aCobManager.Fire({{1, 8.6}, {5, 8.6}});
+              Delay(108); aCobManager.Fire({{2, 8.4}, {5, 8.4}}); // 炸小偷
+              consoleLogger.Info("最后一大波手动收尾."));
 }
