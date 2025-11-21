@@ -8,12 +8,11 @@
 // 连接(使用宏定义简化)
 #define Connect(wave, time, ...) AConnect(ATime(wave, time), [=] { __VA_ARGS__; })
 #define CoConnect(wave, time, ...) AConnect(ATime(wave, time), [=]() -> ACoroutine { __VA_ARGS__; })
-#define Delay(delayTime) co_await ANowDelayTime(delayTime)
+#define Delay(delayTime) (co_await ANowDelayTime(delayTime))
 
 ALogger<AConsole> consoleLogger; // 日志对象-控制台
 
-void AScript()
-{
+void AScript() {
     // ASetReloadMode(AReloadMode::MAIN_UI_OR_FIGHT_UI);
 
     ASetZombies({
@@ -64,20 +63,17 @@ void AScript()
             });
             aIceFiller.Start({{5, 3}, {4, 3}}));
 
-    for (int wave = 1; wave < 21; ++wave)
-    {
+    for (int wave = 1; wave < 21; ++wave) {
         Connect(wave, -200, consoleLogger.Info("当前操作波次: {}", wave));
 
         // PPSD
-        if (ARangeIn(wave, {1, 3, 5, 7, 9, 10, 12, 14, 16, 18}))
-        {
+        if (ARangeIn(wave, {1, 3, 5, 7, 9, 10, 12, 14, 16, 18})) {
             CoConnect(wave, -10, // -10 + 387 < 377
                       aCobManager.RoofFire({{2, 9}, {2, 9}, {4, 9}});
                       Delay(110); // 110 拦截
                       aCobManager.RoofFire(2, 8.8));
             Connect(wave, 601 + 50 - 298, aIceFiller.Coffee()); // 50cs 预判冰
-            if (wave == 9)
-            {
+            if (wave == 9) {
                 Connect(wave, 601 - 150, aCobManager.RoofFire(2, 9));
                 CoConnect(wave, 601 + 1200 - 200 - 387, aCobManager.RoofFire({{5, 9}, {5, 9}});
                           Delay(1100); // 等会儿
@@ -86,15 +82,13 @@ void AScript()
         }
 
         // IP-PPD
-        else if (ARangeIn(wave, {2, 4, 6, 8, 11, 13, 15, 17, 19}))
-        {
+        else if (ARangeIn(wave, {2, 4, 6, 8, 11, 13, 15, 17, 19})) {
             Connect(wave, -150, aCobManager.RoofFire(2, 9));
             CoConnect(wave, 1200 - 200 - 387,                 // 1200cs 波长
                       aCobManager.RoofFire({{2, 9}, {4, 9}}); // 激活炸
                       Delay(220);                             // 220 拦截
                       aCobManager.RoofFire(2, 7.8));
-            if (wave == 19)
-            {
+            if (wave == 19) {
                 CoConnect(wave, 1200 - 10, aCobManager.RoofFire({{2, 9}, {2, 9}, {4, 9}});
                           Delay(110); // 110 拦截
                           aCobManager.RoofFire(2, 8.8));
@@ -105,8 +99,7 @@ void AScript()
             }
         }
 
-        else if (wave == 20)
-        {
+        else if (wave == 20) {
             Connect(wave, -200, aIceFiller.Coffee());                        // 冰消空降
             Connect(wave, -100, aCobManager.RoofFire({{2, 8.5}, {5, 8.5}})); // 炸冰车
             Connect(wave, 50, aCobManager.RoofFire({{4, 2.5}, {4, 6.7}}));   // 炸小偷

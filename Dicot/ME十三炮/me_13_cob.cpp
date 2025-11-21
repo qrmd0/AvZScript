@@ -10,22 +10,19 @@
 
 ALogger<AConsole> consoleLogger; // 日志对象-控制台
 
-ACoroutine I()
-{
+ACoroutine I() {
     ACard({AFLOWER_POT, AICE_SHROOM}, 3, 7);
     co_await ANowDelayTime(100 + 1);
     ARemovePlant(3, 7);
 }
 
-ACoroutine II()
-{
+ACoroutine II() {
     ACard({AFLOWER_POT, AM_ICE_SHROOM}, 3, 7);
     co_await ANowDelayTime(320 + 100 + 1);
     ARemovePlant(3, 7);
 }
 
-void AScript()
-{
+void AScript() {
     // ASetReloadMode(AReloadMode::MAIN_UI_OR_FIGHT_UI);
 
     ASetZombies({
@@ -56,20 +53,20 @@ void AScript()
     });
 
     Connect(1, -599,
-            aCobManager.SetList({
-                {1, 3}, {1, 5}, {1, 1}, //
-                {2, 3}, {2, 5}, {2, 1}, //
-                {3, 3}, {3, 5}, {3, 1}, //
-                {4, 6}, //
-                {4, 1}, {5, 6}, {5, 1}, //
-            }));
+        aCobManager.SetList({
+            // clang-format off
+            {1, 3}, {1, 5}, {1, 1},
+            {2, 3}, {2, 5}, {2, 1},
+            {3, 3}, {3, 5}, {3, 1},
+            {4, 6},
+            {4, 1}, {5, 6}, {5, 1},
+            // clang-format on
+        }));
 
-    for (int wave = 1; wave < 21; ++wave)
-    {
+    for (int wave = 1; wave < 21; ++wave) {
         Connect(wave, -200, consoleLogger.Info("当前操作波次: {}", wave));
 
-        if (wave == 20)
-        {
+        if (wave == 20) {
             Connect(wave, 10 - 320, ACoLaunch(II)); // 冰消空降
             Connect(wave, 100, aCobManager.RoofFire(5, 8));
             Connect(wave, 800, aCobManager.RoofFire({{2, 9}, {2, 9}, {2, 9}, {2, 9}}));
@@ -78,10 +75,8 @@ void AScript()
         }
 
         // IP-PPD
-        else if (ARangeIn(wave, {4, 8, 10, 14, 18}))
-        {
-            if (ARangeIn(wave, {4, 10, 18}))
-            {
+        else if (ARangeIn(wave, {4, 8, 10, 14, 18})) {
+            if (ARangeIn(wave, {4, 10, 18})) {
                 Connect(wave, 5 - 100, ACoLaunch(I)); // 本波原版冰
             }
             Connect(wave, 100, aCobManager.RoofFire(5, 8));
@@ -90,12 +85,11 @@ void AScript()
         }
 
         // PPD
-        else // else if (ARangeIn(wave, {1, 2, 3, 5, 6, 7, 9, 11, 12, 13, 15, 16, 17, 19}))
+        else // if (ARangeIn(wave, {1, 2, 3, 5, 6, 7, 9, 11, 12, 13, 15, 16, 17, 19}))
         {
             Connect(wave, 10, aCobManager.RoofFire({{2, 8.5}, {4, 8.5}})); // 刷新后
             Connect(wave, 10 + 130, aCobManager.RoofFire(2, 7.6));         // 原速延迟 130 炸小鬼
-            if (ARangeIn(wave, {7, 13}))
-            {
+            if (ARangeIn(wave, {7, 13})) {
                 Connect(wave, 601 + 5 - 100 - 320, ACoLaunch(II)); // 下一波的复制冰
             }
             if (ARangeIn(wave, {9, 19})) // 收尾

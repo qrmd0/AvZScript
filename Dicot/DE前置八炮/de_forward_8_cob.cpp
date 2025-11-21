@@ -10,8 +10,7 @@
 
 ALogger<AConsole> consoleLogger; // 日志对象-控制台
 
-void AScript()
-{
+void AScript() {
     // ASetReloadMode(AReloadMode::MAIN_UI_OR_FIGHT_UI);
 
     ASetZombies({
@@ -46,34 +45,28 @@ void AScript()
             aCobManager.SetList({{1, 1}, {1, 5}, {3, 1}, {3, 5}, {2, 5}, {4, 5}, {5, 1}, {5, 5}});
             aIceFiller.Start({{2, 1}, {4, 1}, {3, 7}}));
 
-    for (int wave = 1; wave < 21; ++wave)
-    {
+    for (int wave = 1; wave < 21; ++wave) {
         Connect(wave, -200, consoleLogger.Info("当前操作波次: {}", wave));
 
         // PP
-        if (ARangeIn(wave, {1, 4, 7, 10, 13, 16, 19}))
-        {
+        if (ARangeIn(wave, {1, 4, 7, 10, 13, 16, 19})) {
             Connect(wave, -40, aCobManager.Fire({{2, 9}, {4, 9}}));
             Connect(wave, 601 + 10 - 298, aIceFiller.Coffee());
-            if (wave == 19)
-            {
+            if (wave == 19) {
                 Connect(wave, 601 + 1437 - 200 - 373, aCobManager.Fire({{2, 8.7}, {4, 8.7}}));
                 Connect(wave, /*601 + 1437 - 150*/ 4500 - 200 - 373,
-                        aCobManager.Fire({{2, 8.4}, {4, 8.4}}));
+                    aCobManager.Fire({{2, 8.4}, {4, 8.4}}));
             }
         }
 
         // I-PP
-        else if (ARangeIn(wave, {2, 5, 8, 11, 14, 17}))
-        {
-            if (wave == 2)
-            {
+        else if (ARangeIn(wave, {2, 5, 8, 11, 14, 17})) {
+            if (wave == 2) {
                 Connect(wave, 10 + 400, ACard(ASQUASH, 3, 9)); // 压冰车护存冰
                 Connect(wave, 750, ACard(APUFF_SHROOM, 3, 8)); // 垫撑杆
                 Connect(wave, 750 + 100, ARemovePlant(3, 8));
             }
-            if (wave == 11)
-            {
+            if (wave == 11) {
                 Connect(wave, 10 + 400 - 100, ACard(ACHERRY_BOMB, 3, 8)); // 炸冰车小偷护存冰
             }
             Connect(wave, 1437 - 200 - 373, aCobManager.Fire({{2, 8.7}, {4, 8.7}}));
@@ -81,20 +74,17 @@ void AScript()
         }
 
         // IPP-PP
-        else if (ARangeIn(wave, {3, 6, 9, 12, 15, 18}))
-        {
+        else if (ARangeIn(wave, {3, 6, 9, 12, 15, 18})) {
             Connect(wave, -150, aCobManager.Fire({{2, 8.5}, {4, 8.5}}));
             Connect(wave, 1437 - 200 - 373, aCobManager.Fire({{2, 8.7}, {4, 8.7}}));
-            if (wave == 9)
-            {
+            if (wave == 9) {
                 Connect(wave, 1437 - 40, aCobManager.Fire({{2, 8.7}, {4, 8.7}}));
                 Connect(wave, /*1437 + 601 + 1437 - 200 - 373*/ 4500 - 200 - 373,
-                        aCobManager.Fire({{2, 8.4}, {4, 8.4}}));
+                    aCobManager.Fire({{2, 8.4}, {4, 8.4}}));
             }
         }
 
-        else if (wave == 20)
-        {
+        else if (wave == 20) {
             Connect(wave, -60, aCobManager.Fire({{1, 9}, {2, 9}, {4, 9}, {5, 9}}));
             Connect(wave, -60 + 108, aCobManager.Fire({{1, 8.8}, {4, 8.8}}));
             Connect(wave, 300,
