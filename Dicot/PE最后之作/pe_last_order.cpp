@@ -8,12 +8,11 @@
 // 连接(使用宏定义简化)
 #define Connect(wave, time, ...) AConnect(ATime(wave, time), [=] { __VA_ARGS__; })
 #define CoConnect(wave, time, ...) AConnect(ATime(wave, time), [=]() -> ACoroutine { __VA_ARGS__; })
-#define Delay(delayTime) co_await ANowDelayTime(delayTime)
+#define Delay(delayTime) (co_await ANowDelayTime(delayTime))
 
 ALogger<AConsole> consoleLogger; // 日志对象-控制台
 
-ACoroutine DianCai()
-{
+ACoroutine DianCai() {
     ACard({
         {AUMBRELLA_LEAF, 1, 8},
         {ASCAREDY_SHROOM, 2, 8},
@@ -26,8 +25,7 @@ ACoroutine DianCai()
 
 // 泳池水路 8 列临时高坚果阻挡海豚.
 // 残血或被偷后自动补, 中场种伞保护, 关底大波刷出后停止修补.
-ACoroutine TallNutKeeper()
-{
+ACoroutine TallNutKeeper() {
     // 开场种
     Delay(800); // TODO: 让给存冰位先
     ACard({ALILY_PAD, ATALL_NUT}, 3, 8);
@@ -46,8 +44,7 @@ ACoroutine TallNutKeeper()
     aPlantFixer.Stop();
 }
 
-void AScript()
-{
+void AScript() {
     // ASetReloadMode(AReloadMode::MAIN_UI_OR_FIGHT_UI);
 
     ASetZombies({
@@ -88,35 +85,29 @@ void AScript()
             aIceFiller.Start({{1, 5}, {6, 5}, {3, 3}});
             ACoLaunch(TallNutKeeper));
 
-    for (int wave = 1; wave < 21; ++wave)
-    {
+    for (int wave = 1; wave < 21; ++wave) {
         Connect(wave, -200, consoleLogger.Info("当前操作波次: {}", wave));
 
-        if (wave == 1)
-        {
+        if (wave == 1) {
             CoConnect(wave, -95, aCobManager.Fire({{2, 9}, {5, 9}});
                       Delay(110); aCobManager.Fire({{1, 7.7}, {5, 7.7}}));
         }
 
-        else if (ARangeIn(wave, {2, 10}))
-        {
+        else if (ARangeIn(wave, {2, 10})) {
             Connect(wave, -15, aCobManager.Fire({{2, 9}, {5, 9}}));
             Connect(wave, -15 + 107, aCobManager.Fire({{1, 7.625}, {5, 7.625}}));
-            if (wave == 10)
-            {
+            if (wave == 10) {
                 Connect(wave, -15 + 373 - 100, ACard(ACHERRY_BOMB, 2, 9)); // A
             }
             Connect(wave, 601 + 20 - 298, aIceFiller.Coffee()); // 20cs 预判冰
         }
 
         // I-PPdd
-        else if (ARangeIn(wave, {3, 6, 9, 11, 14, 17}))
-        {
+        else if (ARangeIn(wave, {3, 6, 9, 11, 14, 17})) {
             Connect(wave, 1300 - 200 - 373, aCobManager.Fire({{2, 8.8}, {5, 8.8}}));
             Connect(wave, 1300 + 20 - 298, aIceFiller.Coffee());                               // 20cs 预判冰
             Connect(wave, 1300 - 200 - 373 + 349, aCobManager.Fire({{1, 2.425}, {5, 2.425}})); // 减速尾炸
-            if (wave == 9)
-            {
+            if (wave == 9) {
                 // Connect(wave, 1300 + 180, aCobManager.Fire({{1, 7.2}, {5, 7.2}})); // 可省略
                 CoConnect(wave, 1300 + 1662 - 200 - 373, aCobManager.Fire({{2, 8.8}, {5, 8.8}});
                           Delay(81); ACoLaunch(DianCai);
@@ -126,8 +117,7 @@ void AScript()
         }
 
         // IPP-PPDDC
-        else if (ARangeIn(wave, {4, 7, 12, 15, 18}))
-        {
+        else if (ARangeIn(wave, {4, 7, 12, 15, 18})) {
             Connect(wave, 180, aCobManager.Fire({{1, 7.2}, {5, 7.2}}));
             CoConnect(wave, 1662 - 200 - 373, aCobManager.Fire({{2, 8.8}, {5, 8.8}});
                       Delay(81); ACoLaunch(DianCai);
@@ -135,22 +125,20 @@ void AScript()
         }
 
         // PPdd
-        else if (ARangeIn(wave, {5, 8, 13, 16, 19}))
-        {
+        else if (ARangeIn(wave, {5, 8, 13, 16, 19})) {
             Connect(wave, -15, aCobManager.Fire({{2, 9}, {5, 9}}));
             Connect(wave, -15 + 107, aCobManager.Fire({{1, 7.625}, {5, 7.625}}));
             Connect(wave, 601 + 20 - 298, aIceFiller.Coffee()); // 20cs 预判冰
-            if (wave == 19)
-            {
+            if (wave == 19) {
                 CoConnect(wave, 601 + 1300 - 200 - 373,
-                          Delay(100); aCobManager.Fire({{2, 8.8}, {5, 8.8}}); // 尾炸炮时机微调
+                          Delay(100);
+                          aCobManager.Fire({{2, 8.8}, {5, 8.8}}); // 尾炸炮时机微调
                           Delay(220); aCobManager.Fire({{1, 7.5}, {5, 7.5}}); aCobManager.Skip(3);
                           consoleLogger.Info("第 {} 波手动收尾.", wave));
             }
         }
 
-        else if (wave == 20)
-        {
+        else if (wave == 20) {
             Connect(wave, -150, aCobManager.Fire(4, 7));
             CoConnect(wave, -60, aCobManager.Fire({{1, 9}, {2, 9}, {5, 9}, {6, 9}});
                       Delay(108); aCobManager.Fire({{1, 9}, {2, 9}, {5, 9}, {6, 9}}));

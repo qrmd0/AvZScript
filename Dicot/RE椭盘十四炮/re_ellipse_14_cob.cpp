@@ -8,12 +8,11 @@
 // 连接(使用宏定义简化)
 #define Connect(wave, time, ...) AConnect(ATime(wave, time), [=] { __VA_ARGS__; })
 #define CoConnect(wave, time, ...) AConnect(ATime(wave, time), [=]() -> ACoroutine { __VA_ARGS__; })
-#define Delay(delayTime) co_await ANowDelayTime(delayTime)
+#define Delay(delayTime) (co_await ANowDelayTime(delayTime))
 
 ALogger<AConsole> consoleLogger; // 日志对象-控制台
 
-void AScript()
-{
+void AScript() {
     // ASetReloadMode(AReloadMode::MAIN_UI_OR_FIGHT_UI);
 
     ASetZombies({
@@ -70,38 +69,34 @@ void AScript()
             aIceFiller.SetIceSeedList({AM_ICE_SHROOM, AICE_SHROOM}); // 最后一个存冰优先存白冰, 避免与下一轮选卡蓝冰冲突
     );
 
-    for (int wave = 1; wave < 21; ++wave)
-    {
+    for (int wave = 1; wave < 21; ++wave) {
         Connect(wave, -200, consoleLogger.Info("当前操作波次: {}", wave));
 
-        if (wave == 1)
-        {
+        if (wave == 1) {
             Connect(wave, 377 - 387, aCobManager.RoofFire({{2, 8.8}, {4, 8.8}}));
             Connect(wave, 506 - 387, aCobManager.RoofFire({{2, 8.8}, {4, 8.8}}));
             Connect(wave, 601 + 34 - 387, aCobManager.RoofFire({{2, 8.7}, {4, 8.7}}));
             Connect(wave, 601 + 34 - 298, ACard(ACOFFEE_BEAN, 1, 7)); // aIceFiller.Coffee()
         }
 
-        else if (wave == 2)
-        {
+        else if (wave == 2) {
             Connect(wave, 50, ARemovePlant(1, 7));                                   // 铲
             Connect(wave, 1300 - 200 - 387, aCobManager.RoofFire(4, 8.2));           // 713
             Connect(wave, 1780 - 200 - 387, aCobManager.RoofFire({{2, 9}, {4, 9}})); // 1193
-            CoConnect(wave, 1780 - 200 - 100, if (AIsZombieExist(APOGO_ZOMBIE, 3)) {
+            CoConnect(
+                wave, 1780 - 200 - 100, if (AIsZombieExist(APOGO_ZOMBIE, 3)) {
                         ACard({AFLOWER_POT, AJALAPENO}, 3, 9); Delay(100); ARemovePlant(3, 9); });
             Connect(wave, 1780 + 11 - 298, aIceFiller.Coffee(); AIce3(298)); // 1493
         }
 
-        else if (wave == 10)
-        {
+        else if (wave == 10) {
             Connect(wave, -15, aCobManager.RoofFire({{2, 9}, {4, 9}, {2, 9}, {4, 9}}));
             Connect(wave, -15 + 110, aCobManager.RoofFire(4, 7.7));         // 95; 空炸小鬼兼小偷
             Connect(wave, -15 + 190, aCobManager.RoofFire(1, 5));           // 175; 2-5? 尾炸小鬼兼小偷
             Connect(wave, 601 + 11 - 298, aIceFiller.Coffee(); AIce3(298)); // 314
         }
 
-        else if (wave == 11)
-        {
+        else if (wave == 11) {
             Connect(wave, 10 + 400 - 100, ACard(AJALAPENO, 1, 7); ACard({AFLOWER_POT, ACHERRY_BOMB}, 4, 9));
             Connect(wave, 10 + 400 + 10, ARemovePlant({{1, 7}, {4, 9}}));   // 铲
             Connect(wave, 1250 - 200 - 387, aCobManager.RoofFire(3, 8.21)); // 1300->1250; 落点改为 3 路炸掉 2 路冰车
@@ -109,8 +104,7 @@ void AScript()
             Connect(wave, 1780 + 11 - 298, aIceFiller.Coffee(); AIce3(298));
         }
 
-        else if (ARangeIn(wave, {3, 12}))
-        {
+        else if (ARangeIn(wave, {3, 12})) {
             Connect(wave, 10 + 400 - 387, aCobManager.RoofFire({{2, 9}, {4, 9}}));
             Connect(wave, 10 + 400 - 387 + 220, aCobManager.RoofFire(4, 8.5)); // 空炸
             Connect(wave, 10 + 400 - 387 + 300, aCobManager.RoofFire(1, 4.7)); // 尾炸小鬼跳跳
@@ -119,8 +113,7 @@ void AScript()
             Connect(wave, 1780 + 11 - 298, aIceFiller.Coffee(); AIce3(298));
         }
 
-        else if (ARangeIn(wave, {9, 19}))
-        {
+        else if (ARangeIn(wave, {9, 19})) {
             Connect(wave, 10 + 400 - 387, aCobManager.RoofFire({{2, 9}, {4, 9}}));
             Connect(wave, 10 + 400 - 387 + 220, aCobManager.RoofFire({{2, 8.5}, {4, 8.5}}));
             Connect(wave, 1300 - 200 - 387, aCobManager.RoofFire(3, 8.22)); // 落点改为 3 路减少小丑炸核机率
@@ -132,8 +125,7 @@ void AScript()
             CoConnect(wave, 1705 - 200 + 230 + 230 + 230 - 387, aCobManager.RoofFire({{3, 9}, {4, 9}}); // 留下 1 路
                       Delay(50); ACard(ASNOW_PEA, 1, 6));
             // 清场
-            if (wave == 9)
-            {
+            if (wave == 9) {
                 Connect(wave, 2700,
                         aCobManager.Skip(7 - 4 - 1 + 5); // 调整炮序
                         ACard(AFLOWER_POT, 1, 8);        // 垫一下
@@ -144,9 +136,7 @@ void AScript()
                 );
                 Connect(wave, 4500 - 200 + 100, ARemovePlant(1, 6));           // 铲掉冰豆
                 Connect(wave, 4500 - 5 + 750 - 599, ACard(AFLOWER_POT, 1, 7)); // 第 10 波刷新前 599
-            }
-            else if (wave == 19)
-            {
+            } else if (wave == 19) {
                 CoConnect(wave, 4500 - 200 - 387,
                           aCobManager.RoofFire(1, 8);     // 清场
                           Delay(200); ARemovePlant(1, 6); // 铲掉冰豆
@@ -154,8 +144,7 @@ void AScript()
             }
         }
 
-        else if (wave == 20)
-        {
+        else if (wave == 20) {
             Connect(wave, 50 - 298, aIceFiller.Coffee());                      // 冰消空降
             Connect(wave, 75, aCobManager.RoofFire({{2, 3}, {4, 8}, {2, 8}})); // 炸冰车小偷
             Connect(wave, 1250 - 200 - 387, aCobManager.RoofFire({{1, 9}, {2, 9}, {4, 9}, {5, 9}}));
@@ -163,20 +152,19 @@ void AScript()
                     consoleLogger.Info("第 {} 波手动收尾.", wave));
         }
 
-        else // else if (ARangeIn(wave, {4, 5, 6, 7, 8, 13, 14, 15, 16, 17, 18}))
+        else // if (ARangeIn(wave, {4, 5, 6, 7, 8, 13, 14, 15, 16, 17, 18}))
         {
             // 收尾波前一波延长波长
-            int length = ARangeIn(wave, {8, 13}) ? 1925 : 1780;
+            const int WL = ARangeIn(wave, {8, 13}) ? 1925 : 1780;
             Connect(wave, 10 + 400 - 387, aCobManager.RoofFire({{2, 9}, {4, 9}}));
             Connect(wave, 10 + 400 - 387 + 220, aCobManager.RoofFire({{2, 8.5}, {4, 8.5}}));
             Connect(wave, 1300 - 200 - 387, aCobManager.RoofFire(4, 8.14));
-            Connect(wave, length - 200 - 387, aCobManager.RoofFire({{2, 9}, {4, 9}})); // length - 587
-            if (ARangeIn(wave, {8, 13}))
-            {
-                Connect(wave, length - 200 - 387 + 83, ACard(AFLOWER_POT, 2, 8)); // length - 504; 垫 2 路梯子
-                Connect(wave, length - 200, ARemovePlant(2, 8));                  // length - 200; 炮落地铲
+            Connect(wave, WL - 200 - 387, aCobManager.RoofFire({{2, 9}, {4, 9}})); // WL - 587
+            if (ARangeIn(wave, {8, 13})) {
+                Connect(wave, WL - 200 - 387 + 83, ACard(AFLOWER_POT, 2, 8)); // WL - 504; 垫 2 路梯子
+                Connect(wave, WL - 200, ARemovePlant(2, 8));                  // WL - 200; 炮落地铲
             }
-            Connect(wave, length + 11 - 298, aIceFiller.Coffee(); AIce3(298)); // length - 287
+            Connect(wave, WL + 11 - 298, aIceFiller.Coffee(); AIce3(298)); // WL - 287
         }
     }
 }

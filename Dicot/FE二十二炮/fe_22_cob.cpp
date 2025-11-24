@@ -8,32 +8,27 @@
 // 连接(使用宏定义简化)
 #define Connect(wave, time, ...) AConnect(ATime(wave, time), [=] { __VA_ARGS__; })
 #define CoConnect(wave, time, ...) AConnect(ATime(wave, time), [=]() -> ACoroutine { __VA_ARGS__; })
-#define Delay(delayTime) co_await ANowDelayTime(delayTime)
+#define Delay(delayTime) (co_await ANowDelayTime(delayTime))
 
 ALogger<AConsole> consoleLogger; // 日志对象-控制台
 
 // Cannon Fodder
 // 垫材 花盆/胆小菇 阳光菇/小喷菇
 // 根据小喷是否可用来决定用哪一组垫材
-ACoroutine DianCai()
-{
-    if (AIsSeedUsable(APUFF_SHROOM))
-    {
+ACoroutine DianCai() {
+    if (AIsSeedUsable(APUFF_SHROOM)) {
         ACard({{ASUN_SHROOM, 5, 9}, {APUFF_SHROOM, 6, 9}});
-    }
-    else
-    {
+    } else {
         ACard({{AFLOWER_POT, 5, 9}, {ASCAREDY_SHROOM, 6, 9}});
     }
     Delay(30);
     ARemovePlant({{5, 9}, {6, 9}});
 }
 
-void AScript()
-{
+void AScript() {
     // ASetReloadMode(AReloadMode::MAIN_UI_OR_FIGHT_UI);
 
-    AMRef<unsigned short>(0x0041a68d) = 0xd231; // 浓雾透视
+    AMRef<uint16_t>(0x0041'A68D) = 0xD231; // 浓雾透视
 
     ASetZombies({
         AZOMBIE,               // 普僵
@@ -63,35 +58,34 @@ void AScript()
     });
 
     Connect(1, -599,
-            aCobManager.SetList({
-                {1, 1},
-                {2, 1},
-                {3, 1},
-                {4, 1},
-                {5, 1},
-                {6, 1},
-                {1, 3},
-                {2, 3},
-                {3, 3},
-                {4, 3},
-                {5, 3},
-                {6, 3},
-                {1, 5},
-                {2, 5},
-                {3, 5},
-                {4, 5},
-                {5, 5},
-                {6, 5},
-                {1, 7},
-                {2, 7},
-                // {3, 7},
-                // {4, 7},
-                {5, 7},
-                {6, 7},
-            }));
+        aCobManager.SetList({
+            {1, 1},
+            {2, 1},
+            {3, 1},
+            {4, 1},
+            {5, 1},
+            {6, 1},
+            {1, 3},
+            {2, 3},
+            {3, 3},
+            {4, 3},
+            {5, 3},
+            {6, 3},
+            {1, 5},
+            {2, 5},
+            {3, 5},
+            {4, 5},
+            {5, 5},
+            {6, 5},
+            {1, 7},
+            {2, 7},
+            // {3, 7},
+            // {4, 7},
+            {5, 7},
+            {6, 7},
+        }));
 
-    for (int wave = 1; wave < 21; ++wave)
-    {
+    for (int wave = 1; wave < 21; ++wave) {
         Connect(wave, -200, consoleLogger.Info("当前操作波次: {}", wave));
     }
 

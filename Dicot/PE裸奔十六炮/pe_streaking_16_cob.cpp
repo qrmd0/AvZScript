@@ -8,7 +8,7 @@
 // 使用宏定义简化代码
 #define Connect(wave, time, ...) AConnect(ATime(wave, time), [=] { __VA_ARGS__; })
 #define CoConnect(wave, time, ...) AConnect(ATime(wave, time), [=]() -> ACoroutine { __VA_ARGS__; })
-#define Delay(delayTime) co_await ANowDelayTime(delayTime)
+#define Delay(delayTime) (co_await ANowDelayTime(delayTime))
 
 ALogger<AConsole> consoleLogger; // 日志对象-控制台
 
@@ -27,12 +27,10 @@ ACoroutine DianCai_Low() // 垫下半场
 }
 
 // 偷菜
-ACoroutine Sunflower()
-{
-    std::vector<AGrid> sunflowerSpots = {{1, 2}, {1, 5}, {1, 6}, {2, 2}, {2, 5}, {2, 6}};
+ACoroutine Sunflower() {
+    static constexpr std::pair<int, int> sunflowerSpots[] = {{1, 2}, {1, 5}, {1, 6}, {2, 2}, {2, 5}, {2, 6}};
     // 开局种
-    for (auto &[row, col] : sunflowerSpots)
-    {
+    for (auto& [row, col] : sunflowerSpots) {
         ACard(ASUNFLOWER, row, col);
         Delay(751 + 1);
     }
@@ -41,14 +39,12 @@ ACoroutine Sunflower()
     // 等白字出现
     co_await [] { return AGetMainObject()->Words()->MRef<int>(0x8C) == 12; };
     // 结尾铲
-    for (auto &[row, col] : sunflowerSpots)
-    {
+    for (auto& [row, col] : sunflowerSpots) {
         ARemovePlant(row, col);
     }
 }
 
-void AScript()
-{
+void AScript() {
     // ASetReloadMode(AReloadMode::MAIN_UI_OR_FIGHT_UI);
 
     ASetZombies({
@@ -90,21 +86,16 @@ void AScript()
             ACoLaunch(Sunflower); // 偷菜协程
     );
 
-    for (int wave = 1; wave < 21; ++wave)
-    {
+    for (int wave = 1; wave < 21; ++wave) {
         Connect(wave, -200, consoleLogger.Info("当前操作波次: {}", wave));
 
         // PPD|I-
-        if (ARangeIn(wave, {1, 3, 5, 7, 9, 10, 12, 14, 16, 18}))
-        {
-            if (wave == 10)
-            {
+        if (ARangeIn(wave, {1, 3, 5, 7, 9, 10, 12, 14, 16, 18})) {
+            if (wave == 10) {
                 Connect(wave, -56, aCobManager.Fire({{2, 9}, {5, 9}}));
                 Connect(wave, -56 + 110, aCobManager.Fire(5, 8));
                 Connect(wave, 601 - 200 - 100, ACard(ACHERRY_BOMB, 2, 9)); // 301; 消延迟 炸小偷
-            }
-            else
-            {
+            } else {
                 Connect(wave, -133, aCobManager.Fire({{2, 9}, {5, 9}}));
                 Connect(wave, -133 + 110, aCobManager.Fire(5, 8));
             }
@@ -120,19 +111,18 @@ void AScript()
                 Connect(wave, 601 + 1200 - 133, aCobManager.Fire({{1, 2.4}, {5, 9}}));
                 Connect(wave, 601 + 1200 - 133 + 110, aCobManager.Fire(2, 9));
                 CoConnect(wave, 601 + 1200 + 601 - 100,
-                          Delay(600); aCobManager.Fire({{2, 9}, {5, 9}}); ACoLaunch(DianCai_Up));
+                          Delay(600);
+                          aCobManager.Fire({{2, 9}, {5, 9}}); ACoLaunch(DianCai_Up));
             }
         }
 
         // C|Pd-PPD
-        else if (ARangeIn(wave, {2, 4, 6, 8, 11, 13, 15, 17, 19}))
-        {
+        else if (ARangeIn(wave, {2, 4, 6, 8, 11, 13, 15, 17, 19})) {
             Connect(wave, -135, ACoLaunch(DianCai_Low)); // -135 放垫, 撑杆跳跃用时 180, 落地后 5 冰生效
             Connect(wave, -100,
                     if (wave == 11)
                         aCobManager.Fire(1, 4); // 炸小鬼和小偷
-                    else
-                        aCobManager.Fire(1, 2.4));
+                    else aCobManager.Fire(1, 2.4));
             Connect(wave, 444 - 373, aCobManager.Fire(5, 7.4));
             CoConnect(wave, 1200 - 200 - 373, aCobManager.Fire({{2, 9}, {5, 9}});
                       Delay(220); aCobManager.Fire(5, 8.5));
@@ -148,8 +138,7 @@ void AScript()
             }
         }
 
-        else if (wave == 20)
-        {
+        else if (wave == 20) {
             Connect(wave, -150, aCobManager.Fire(4, 7); aIceFiller.Stop());
             CoConnect(wave, -60, aCobManager.Fire({{1, 9}, {2, 9}, {5, 9}, {6, 9}}); // 等到刷新前 60cs
                       Delay(108); aCobManager.Fire({{1, 9}, {2, 9}, {5, 9}, {6, 9}});
