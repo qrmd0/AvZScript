@@ -229,11 +229,11 @@ public:
     virtual void _BeforeScript() override {}
     virtual void _ExitFight() override {
         // 由于AvZ内置的painter会卸载一个hook，因此我只能把它加回来。。说的就是你，aPainter
-        // 禅境花园不是一个关卡，但是智慧树是。谁知道宝开程序员脑子里想的什么？
         __ABasicPainter::_BeforeScript();
     }
     virtual void _AfterInject() override {
         __ABasicPainter::_AfterInject();
+        // AvZ不在禅境花园关卡加载脚本，只能这样了
         __ABasicPainter::_BeforeScript();
     }
     // 没这个第二次注入会崩溃，因为原本的painter加了个hook指向dll内部函数，第二次注入时先卸载原dll后加载新dll，卸载后游戏因为找不到hook的函数所以崩溃
@@ -429,6 +429,12 @@ class AGardenItemCollector : public AItemCollector, AOrderedAfterInjectHook<-1> 
 public:
     void _Run() {
         if (InGarden() && AutoTool::lock == 0) {
+            // 鼠标在返回按钮上的时候不要收集，不然崩给你看
+            int curX = AGetPvzBase()->MouseWindow()->MouseAbscissa();
+            int curY = AGetPvzBase()->MouseWindow()->MouseOrdinate();
+            if (curY <= 35 && curX >= 628 && curX <= 790) {
+                return;
+            }
             AItemCollector::_Run();
         }
     }
