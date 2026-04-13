@@ -37,7 +37,16 @@ public:
     // 金盏花颜色
     // 0：不是金盏花
     // 2：白色
-    // 9：品红
+    // 3：品红
+    // 4：橙色
+    // 5：粉色
+    // 6：淡蓝
+    // 7：红色
+    // 8：蓝色
+    // 9：紫色
+    // 10：淡紫
+    // 11：黄色
+    // 12：绿色
     __ANodiscard int& Color() noexcept {
         return MRef<int>(0x20);
     }
@@ -79,6 +88,13 @@ int AGetFertilizerNum() {
 
 int AGetInsecticideNum() {
     return AMRef<int>(0x6A9EC0, 0x82c, 0x1FC) - 1000;
+}
+
+void ResetMarigoldBuyDate() {
+    // 重置金盏花购买日期
+    AMRef<int>(0x6A9EC0, 0x82c, 0x1E8) = 0;
+    AMRef<int>(0x6A9EC0, 0x82c, 0x1EC) = 0;
+    AMRef<int>(0x6A9EC0, 0x82c, 0x1F0) = 0;
 }
 
 // 我不明白宝开程序员的脑子想的什么
@@ -415,7 +431,7 @@ bool InGarden() {
     if (AGetPvzBase() == 0) {
         return false;
     }
-    if (AGetPvzBase()->GameUi() != 3 && AGetPvzBase()->LevelId() != AAsm::CHALLENGE_ZEN_GARDEN) {
+    if (AGetPvzBase()->GameUi() != 3 || AGetPvzBase()->LevelId() != AAsm::CHALLENGE_ZEN_GARDEN) {
         return false;
     }
     if (AGetMainObject() == 0) {
@@ -432,7 +448,7 @@ public:
             // 鼠标在返回按钮上的时候不要收集，不然崩给你看
             int curX = AGetPvzBase()->MouseWindow()->MouseAbscissa();
             int curY = AGetPvzBase()->MouseWindow()->MouseOrdinate();
-            if (curY <= 35 && curX >= 628 && curX <= 790) {
+            if (curY <= 36 && curX >= 627 && curX <= 791) {
                 return;
             }
             AItemCollector::_Run();
@@ -451,19 +467,17 @@ AGardenItemCollector garden_item_collector;
 
 // debug
 void DebugPrintGarden(ALogger<AConsole> & logger) {
-    int plantSize = AGetMainObject()->PlantCountMax();
-    APlant * plantArray = AGetMainObject()->PlantArray();
     int potNum = AGetPotPlantNum();
     APotPlant * potArray = AGetPotPlantArray();
     logger.Info("Garden pot plant info:");
     for (int i = 0; i < potNum; i++) {
         APotPlant & pot = potArray[i];
-        for (int i = 0; i < plantSize; i++) {
-            auto & plant = plantArray[i];
+        for (auto & plant : aAlivePlantFilter) {
             if (plant.Type() != AHP_33 && plant.Row() == pot.Row() && plant.Col() == pot.Col()) {
-                logger.Info("pot {:d} in: {:d} at: {:d} {:d} reversed: {:d} state: {:d} requires: {:d}", 
+                logger.Info("pot {:d} in: {:d} at: {:d} {:d} reversed: {:d} state: {:d} requires: {:d} water: {:d}/{:d} color: {:d}", 
                     pot.Type(), pot.Location(), pot.Row(), pot.Col(), 
-                    pot.isReversed(), plant.State(), pot.Requirement()
+                    pot.isReversed(), plant.State(), pot.Requirement(),
+                    pot.WaterCnt(), pot.MaxWaterCnt(), pot.Color()
                 );
             }
         }
@@ -479,7 +493,9 @@ AutoTool fertilizer(7, 0);  // 肥料
 AutoTool insecticide(8, 0);  // 杀虫剂
 AutoTool music_player(9, 0);  // 留声机
 
-// ALogger<AConsole> consoleLogger;
+#ifdef DEBUG
+ALogger<AConsole> consoleLogger;
+#endif
 
 void GardenInit() {
     // 脚本开关（按Q）
@@ -489,10 +505,16 @@ void GardenInit() {
         fertilizer.Switch();
         insecticide.Switch();
     }, 0, ATickRunner::AFTER_INJECT);
-    // debug print, uncomment consoleLogger first
-    // AConnect('D', [] () {
-    //     DebugPrintGarden(consoleLogger);
-    // }, 0, ATickRunner::AFTER_INJECT);
+    // 重置金盏花购买日期
+    AConnect('M', [] () {
+        ResetMarigoldBuyDate();
+    }, 0, ATickRunner::AFTER_INJECT);
+#ifdef DEBUG
+    // debug print
+    AConnect('D', [] () {
+        DebugPrintGarden(consoleLogger);
+    }, 0, ATickRunner::AFTER_INJECT);
+#endif
 }
 
 AOnAfterInject(GardenInit());
@@ -528,8 +550,6 @@ void Garden() {
     }
     
     // 一些游戏内数据
-    int plantSize = AGetMainObject()->PlantCountMax();
-    APlant * plantArray = AGetMainObject()->PlantArray();
     int potNum = AGetPotPlantNum();
     APotPlant * potArray = AGetPotPlantArray();
 
@@ -537,10 +557,9 @@ void Garden() {
     for (int i = 0; i < potNum; i++) {
         APotPlant & pot = potArray[i];
         if (PotPlantLocationMatch(pot, scene)) {
-            // find corresponding plant
-            for (int i = 0; i < plantSize; i++) {
-                auto & plant = plantArray[i];
-                if (plant.Type() != AHP_33 && plant.Row() == pot.Row() && plant.Col() == pot.Col() && garden_cooldown.GetCoolDown(pot.Row(), pot.Col()) == 0) {
+            // find corresponding plant. 必须是活的植物，否则会出错，表现为盆栽处于苗状态（age=0），浇水、施肥到age=1时，会不停施肥
+            for (auto & plant : aAlivePlantFilter) {
+                if (plant.Type() != AHP_33 && plant.Row() == pot.Row() && plant.Col() == pot.Col() && !plant.IsSleeping() && garden_cooldown.GetCoolDown(pot.Row(), pot.Col()) == 0) {
                     // 坐标
                     int xi = plant.Abscissa() + plant.HurtWidth() / 2;
                     int yi = plant.Ordinate() + plant.HurtHeight() / 2;
@@ -558,7 +577,7 @@ void Garden() {
                                 garden_cooldown.SetCoolDown(pot.Row(), pot.Col(), 200);
                             }
                         }
-                    } else if (plant.State() == 0 && !plant.IsSleeping()) {  // 需要浇水
+                    } else if (plant.State() == 0) {  // 需要浇水
                         if (water_can.Use(xi, yi)) {
                             garden_cooldown.SetCoolDown(plant.Row(), plant.Col(), 200);
                         }
