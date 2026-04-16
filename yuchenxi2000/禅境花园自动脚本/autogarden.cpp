@@ -1,17 +1,72 @@
 // 禅境花园自动脚本 by yuchenxi2000
-// 进花园自动浇水/施肥/杀虫/放音乐/捡钱，按Q开关脚本
-// 使用了一些较危险的特性，如内联汇编、状态钩，如果自行改代码可能会把游戏弄崩溃，先预警一下（虽然这个脚本不会崩）
+// 进花园自动浇水/施肥/杀虫/放音乐/捡钱
+// 功能开关：按Q开关脚本；按M重置商店里金盏花购买日期；按P给你一株盆栽（可在弹出窗口中选择植物类型）
 // 请无视VS Code的警告，脚本能正常编译
 #include <avz.h>
+#include <windows.h>
+
+// Constructable version of APvzStruct
+class CPvzStruct {
+public:
+    template <typename T = CPvzStruct>
+    __ANodiscard T& MRef(uintptr_t addr) noexcept {
+        return (T&)((uint8_t*)this)[addr];
+    }
+
+    template <typename T = CPvzStruct>
+    __ANodiscard T* MPtr(uintptr_t addr) noexcept {
+        return *(T**)((uint8_t*)this + addr);
+    }
+
+    template <typename T = CPvzStruct*>
+    __ANodiscard T MVal(uintptr_t addr) noexcept {
+        return (T)((uint8_t*)this + addr);
+    }
+
+    // MRef<T>(0x1, 0x2, 0x3) 形式
+    template <typename T = CPvzStruct, typename... Others>
+    __ANodiscard T& MRef(uintptr_t first, Others... others) noexcept {
+        return MPtr(first)->MRef<T>(others...);
+    }
+
+    template <typename T = CPvzStruct, typename... Others>
+    __ANodiscard T* MPtr(uintptr_t first, Others... others) noexcept {
+        return MPtr(first)->MPtr<T>(others...);
+    }
+
+    template <typename T = CPvzStruct*, typename... Others>
+    __ANodiscard T MVal(uintptr_t first, Others... others) noexcept {
+        return MPtr(first)->MVal<T>(others...);
+    }
+
+    template <typename T>
+    void Write(const std::vector<T>& vec) {
+        std::copy(vec.begin(), vec.end(), (T*)this);
+    }
+
+    template <typename T, typename Iter>
+    void Write(Iter&& begin, Iter&& end) {
+        std::copy(begin, end, (T*)this);
+    }
+
+    template <typename T>
+    __ANodiscard auto Read(std::size_t size) {
+        std::vector<T> vec(size);
+        T* ptr = (T*)this;
+        std::copy(ptr, ptr + size, vec.begin());
+        return vec;
+    }
+};
 
 // 花园花盆属性
-struct APotPlant : public APvzStruct {
-    __ADeleteCopyAndMove(APotPlant);
-
+struct APotPlant : public CPvzStruct {
 protected:
     uint8_t _data[0x58];
 
 public:
+    APotPlant() {
+        memset(_data, 0, sizeof(_data));
+    }
     // 植物类型
     __ANodiscard int& Type() noexcept {
         return MRef<int>(0x0);
@@ -69,6 +124,29 @@ public:
         return MRef<int>(0x30);
     }
 };
+
+// 给禅境花园新增一株盆栽
+void GivePotPlant(int plantType, int isReversed) {
+    // sanity check
+    if (plantType < 0 || plantType > 48 || isReversed < 0 || isReversed > 1) {
+        return;
+    }
+    APotPlant potPlant;
+    potPlant.Type() = plantType;
+    potPlant.isReversed() = isReversed;
+    potPlant.MaxWaterCnt() = 3;
+    // 我不知道0x81C地址处是什么，lmintlcx站里的地址表也没有，反正参数是这么传的，it just works
+    asm volatile(
+        "movl %[potPlantRef], %%edx;"
+        "movl 0x6A9EC0, %%eax;"
+        "movl 0x81C(%%eax), %%eax;"
+        "pushl %%eax;"
+        "movl $0x51D8C0, %%eax;"
+        "call *%%eax;"
+        :
+        : [potPlantRef] "rm"(&potPlant)
+        : ASaveAllRegister);
+}
 
 int AGetPotPlantNum() {
     return AMRef<int>(0x6A9EC0, 0x82c, 0x350);
@@ -465,6 +543,19 @@ public:
 
 AGardenItemCollector garden_item_collector;
 
+int GetPotNumInGarden(int gardenType) {
+    int potNum = AGetPotPlantNum();
+    APotPlant * potArray = AGetPotPlantArray();
+    int cnt = 0;
+    for (int i = 0; i < potNum; i++) {
+        APotPlant & pot = potArray[i];
+        if (pot.Location() == gardenType) {
+            cnt++;
+        }
+    }
+    return cnt;
+}
+
 // debug
 void DebugPrintGarden(ALogger<AConsole> & logger) {
     int potNum = AGetPotPlantNum();
@@ -497,6 +588,155 @@ AutoTool music_player(9, 0);  // 留声机
 ALogger<AConsole> consoleLogger;
 #endif
 
+int selectedPotPlantType = 0;
+bool selectedPotIsReversed = false;
+bool userSelected = false;
+
+// 控件 ID
+#define IDC_EDIT_INPUT    101
+#define IDC_CHECK_OPTION  102
+#define IDC_BTN_OK        103
+#define IDC_BTN_CANCEL    104
+
+// 窗口过程
+LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    switch (uMsg) {
+        case WM_CREATE: {
+            // 文本
+            CreateWindowExW(0, L"STATIC", L"输入植物编号", 
+                WS_CHILD | WS_VISIBLE | SS_LEFT, 
+                20, 10, 140, 20, 
+                hWnd, (HMENU)1001, __aig.hInstance, NULL);
+
+            // 创建输入框（编辑框）
+            CreateWindowExW(0, L"EDIT", L"",
+                WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
+                20, 35, 260, 25,
+                hWnd, (HMENU)IDC_EDIT_INPUT, __aig.hInstance, NULL);
+
+            // 创建复选框
+            CreateWindowExW(0, L"BUTTON", L"是否反向？",
+                WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
+                20, 70, 140, 25,
+                hWnd, (HMENU)IDC_CHECK_OPTION, __aig.hInstance, NULL);
+
+            // 创建“确定”按钮
+            CreateWindowExW(0, L"BUTTON", L"确定",
+                WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+                80, 110, 70, 25,
+                hWnd, (HMENU)IDC_BTN_OK, __aig.hInstance, NULL);
+
+            // 创建“取消”按钮
+            CreateWindowExW(0, L"BUTTON", L"取消",
+                WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+                170, 110, 70, 25,
+                hWnd, (HMENU)IDC_BTN_CANCEL, __aig.hInstance, NULL);
+            break;
+        }
+
+        case WM_COMMAND: {
+            int wmId = LOWORD(wParam);
+            switch (wmId) {
+                case IDC_BTN_OK: {
+                    // 获取输入框中的文本
+                    wchar_t buffer[256] = {0};
+                    HWND hEdit = GetDlgItem(hWnd, IDC_EDIT_INPUT);
+                    GetWindowTextW(hEdit, buffer, 256);
+
+                    // 获取复选框状态
+                    HWND hCheck = GetDlgItem(hWnd, IDC_CHECK_OPTION);
+                    BOOL isChecked = (SendMessage(hCheck, BM_GETCHECK, 0, 0) == BST_CHECKED);
+
+                    // 获得输入内容
+                    selectedPotIsReversed = isChecked;
+                    try {
+                        selectedPotPlantType = std::stoi(buffer);
+                        userSelected = true;
+                    } catch (std::invalid_argument const& ex) {
+                        break;
+                    } catch (std::out_of_range const& ex) {
+                        break;
+                    }
+
+                    // 关闭窗口
+                    DestroyWindow(hWnd);
+                    break;
+                }
+                case IDC_BTN_CANCEL:
+                    userSelected = false;
+                    DestroyWindow(hWnd);
+                    break;
+            }
+            break;
+        }
+
+        case WM_DESTROY:
+            // 不要下面一行，不然无法第二次打开弹窗
+            // PostQuitMessage(0);
+            break;
+
+        default:
+            return DefWindowProc(hWnd, uMsg, wParam, lParam);
+    }
+    return 0;
+}
+
+bool winClassRegistered = false;
+
+int ShowPotSelectDialog() {
+    if (!winClassRegistered) {
+        // 注册窗口类
+        WNDCLASSEXW wc = {0};
+        wc.cbSize        = sizeof(WNDCLASSEXW);
+        wc.lpfnWndProc   = WndProc;
+        wc.hInstance     = __aig.hInstance;
+        wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
+        wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+        wc.lpszClassName = L"InputDialogClass";
+        if (!RegisterClassExW(&wc)) {
+            // MessageBoxW(NULL, L"窗口类注册失败！", L"错误", MB_ICONERROR);
+            return 0;
+        }
+        winClassRegistered = true;
+    }
+
+    int width = 320;
+    int height = 180;
+    int x = CW_USEDEFAULT;
+    int y = CW_USEDEFAULT;
+    HWND hParentWnd = AGetPvzBase()->Hwnd();
+    if (hParentWnd) {
+        RECT rcParent;
+        GetWindowRect(hParentWnd, &rcParent);
+        int parentWidth = rcParent.right - rcParent.left;
+        int parentHeight = rcParent.bottom - rcParent.top;
+        x = rcParent.left + (parentWidth - width) / 2;
+        y = rcParent.top + (parentHeight - height) / 2;
+    }
+
+    // 创建窗口
+    HWND hWnd = CreateWindowExW(
+        0, L"InputDialogClass", L"",
+        WS_OVERLAPPED | WS_CAPTION | WS_VISIBLE | WS_SYSMENU,
+        x, y, width, height,
+        NULL, NULL, __aig.hInstance, NULL
+    );
+
+    if (!hWnd) {
+        // MessageBoxW(NULL, L"窗口创建失败！", L"错误", MB_ICONERROR);
+        return 0;
+    }
+
+    // 消息循环
+    MSG msg;
+    while (GetMessageW(&msg, NULL, 0, 0)) {
+        TranslateMessage(&msg);
+        DispatchMessageW(&msg);
+        if (!IsWindow(hWnd)) break;
+    }
+    return 1;
+}
+
 void GardenInit() {
     // 脚本开关（按Q）
     AConnect('Q', [] () {
@@ -509,6 +749,19 @@ void GardenInit() {
     AConnect('M', [] () {
         ResetMarigoldBuyDate();
     }, 0, ATickRunner::AFTER_INJECT);
+    // 给我一盆指定的植物
+    AConnect('P', [] () {
+        // 判断花园是否满了？得到盆栽默认放在主花园，如果满了，再放会崩溃
+        if (GetPotNumInGarden(0) >= 32) {
+            MessageBoxW(NULL, L"你的花园已经满了！请先移除一些盆栽", L"AutoGarden", NULL);
+            return;
+        }
+        // 显示一个对话框
+        int status = ShowPotSelectDialog();
+        if (status && userSelected) {
+            GivePotPlant(selectedPotPlantType, selectedPotIsReversed);
+        }
+    }, 0, ATickRunner::AFTER_INJECT);
 #ifdef DEBUG
     // debug print
     AConnect('D', [] () {
@@ -517,7 +770,16 @@ void GardenInit() {
 #endif
 }
 
+void GardenFinalize() {
+    // 这个是避免再次注入时，由于窗口类已经注册，导致无法弹出窗口
+    if (winClassRegistered) {
+        UnregisterClassW(L"InputDialogClass", __aig.hInstance);
+    }
+}
+
 AOnAfterInject(GardenInit());
+
+AOnBeforeExit(GardenFinalize());
 
 void Garden() {
     // avoid crash
