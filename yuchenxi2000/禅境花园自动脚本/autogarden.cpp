@@ -1,7 +1,13 @@
 // 禅境花园自动脚本 by yuchenxi2000
 // 进花园自动浇水/施肥/杀虫/放音乐/捡钱
-// 功能开关：按Q开关脚本；按M重置商店里金盏花购买日期；按P给你一株盆栽（可在弹出窗口中选择植物类型）
-// 请无视VS Code的警告，脚本能正常编译
+//
+// 功能开关：
+// 按Q开关脚本；按M重置商店里金盏花购买日期；按P给你一株盆栽（可在弹出窗口中选择植物类型）；按G让所有植物立即长大（你可能要重新进一下花园）
+// 按I显示所有植物编号，金盏花额外显示颜色代码；按U关闭安全模式，此时你可以通过按P得到任意编号的盆栽，但有崩溃风险
+// 按R拯救你的花园，如果你按U得到了一颗非法植物，那么点击花园图标就会崩游戏，此时在主界面按R就能删掉所有编号不正常的植物
+//
+// 请无视VS Code的警告，脚本能正常编译。
+// 定义DEBUG宏进入开发者模式，此时按D在命令行里输出盆栽信息，且按P时不会判断植物ID是否合法（可能导致崩溃！）。按T在花园里展示所有植物，共六大类植物，但不要在主玩存档使用，因为会覆盖你的所有植物！
 #include <avz.h>
 #include <windows.h>
 
@@ -58,6 +64,16 @@ public:
     }
 };
 
+bool IsPotIDValid(int potID) {
+    // 这些是怎么玩都不会导致游戏崩溃的植物编号，包括可通过正常方法获得的，以及只能通过作弊调出来的
+    // 一些放着不会崩溃，但是用手套/卖出会崩溃的植物不包括在内
+    if (potID >= 0 && potID <= 52) {
+        return true;
+    }
+    std::vector<int> discreteCases = {58,59,60,61,63,64,66,69,70,71,72,73,79,81,82,83,84,85,86,87,89,90,92,93,94,95};
+    return std::find(discreteCases.begin(), discreteCases.end(), potID) != discreteCases.end();
+}
+
 // 花园花盆属性
 struct APotPlant : public CPvzStruct {
 protected:
@@ -66,6 +82,10 @@ protected:
 public:
     APotPlant() {
         memset(_data, 0, sizeof(_data));
+    }
+    // 盆栽ID是否合法？
+    bool HasValidID() {
+        return IsPotIDValid(Type());
     }
     // 植物类型
     __ANodiscard int& Type() noexcept {
@@ -125,15 +145,21 @@ public:
     }
 };
 
+bool unsafeMode = false;
+bool plotPotID = false;
+
 // 给禅境花园新增一株盆栽
-void GivePotPlant(int plantType, int isReversed) {
+void GivePotPlant(int plantType, int isReversed, int color = 0) {
+#ifndef DEBUG
     // sanity check
-    if (plantType < 0 || plantType > 48 || isReversed < 0 || isReversed > 1) {
+    if (!unsafeMode && (!IsPotIDValid(plantType) || isReversed < 0 || isReversed > 1)) {
         return;
     }
+#endif
     APotPlant potPlant;
     potPlant.Type() = plantType;
     potPlant.isReversed() = isReversed;
+    potPlant.Color() = color;
     potPlant.MaxWaterCnt() = 3;
     // 我不知道0x81C地址处是什么，lmintlcx站里的地址表也没有，反正参数是这么传的，it just works
     asm volatile(
@@ -148,7 +174,7 @@ void GivePotPlant(int plantType, int isReversed) {
         : ASaveAllRegister);
 }
 
-int AGetPotPlantNum() {
+int & AGetPotPlantNum() {
     return AMRef<int>(0x6A9EC0, 0x82c, 0x350);
 }
 
@@ -157,7 +183,7 @@ APotPlant * AGetPotPlantArray() {
 }
 
 bool AHasMusicPlayer() {
-    return AMRef<int>(0x6A9EC0, 0x82c, 0x200);
+    return AMRef<bool>(0x6A9EC0, 0x82c, 0x200);
 }
 
 int AGetFertilizerNum() {
@@ -341,7 +367,7 @@ __MyABasicPainter _basicPainter;
 
 // 反正我只用画一段文字，直接化身CV工程师
 static bool __isInPaintTickRunner = false;
-void MyDraw(const AText& posText, int duration, float layer) {
+void MyDraw(const AText& posText, int duration, float layer, DWORD _textColor = AArgb(0xff, 0, 0xff, 0xff)) {
     // 跳帧模式下，绘制无效
     if (__aGameControllor.isSkipTick() || duration <= 0)
         return;
@@ -411,7 +437,7 @@ void MyDraw(const AText& posText, int duration, float layer) {
             }
         } while (false);
     }
-    DWORD _textColor = AArgb(0xff, 0, 0xff, 0xff);
+
     textInfo.color = _textColor;
     textInfo.x = posText.x + totalWidth * _basicPainter.posDict[int(posText.pos)][0];
     textInfo.y = posText.y + totalHeight * _basicPainter.posDict[int(posText.pos)][1];
@@ -518,6 +544,22 @@ bool InGarden() {
     return true;
 }
 
+bool InShop() {
+    auto pvzBase = AGetPvzBase();
+    if (pvzBase == nullptr) {
+        return false;
+    }
+    auto mouseWnd = pvzBase->MouseWindow();
+    if (mouseWnd == nullptr) {
+        return false;
+    }
+    auto topWnd = mouseWnd->TopWindow();
+    if (topWnd == nullptr) {
+        return false;
+    }
+    return topWnd->Type() == 4;
+}
+
 // 适合花园的自动收集
 class AGardenItemCollector : public AItemCollector, AOrderedAfterInjectHook<-1> {
 public:
@@ -556,6 +598,25 @@ int GetPotNumInGarden(int gardenType) {
     return cnt;
 }
 
+APlant * FindPlantOnPot(APotPlant & pot) {
+    if (!AGetMainObject()) {
+        return nullptr;
+    }
+    // 必须是活的植物，否则会出错，表现为盆栽处于苗状态（age=0），浇水、施肥到age=1时，会不停施肥
+    for (auto & plant : aAlivePlantFilter) {
+        // 针对花盆盆栽进行特判
+        // 不特判了，暂时无解，因为如果这样，那么盆栽为花盆时会不停浇水，目前没有好的办法
+        // if (plant.Type() == AHP_33 && pot.Type() == AHP_33) {
+        //     return &plant;
+        // }
+        if (plant.Type() != AHP_33 && plant.Row() == pot.Row() && plant.Col() == pot.Col()) {
+            return &plant;
+        }
+    }
+    return nullptr;
+}
+
+#ifdef DEBUG
 // debug
 void DebugPrintGarden(ALogger<AConsole> & logger) {
     int potNum = AGetPotPlantNum();
@@ -563,20 +624,47 @@ void DebugPrintGarden(ALogger<AConsole> & logger) {
     logger.Info("Garden pot plant info:");
     for (int i = 0; i < potNum; i++) {
         APotPlant & pot = potArray[i];
-        for (auto & plant : aAlivePlantFilter) {
-            if (plant.Type() != AHP_33 && plant.Row() == pot.Row() && plant.Col() == pot.Col()) {
-                logger.Info("pot {:d} in: {:d} at: {:d} {:d} reversed: {:d} state: {:d} requires: {:d} water: {:d}/{:d} color: {:d}", 
-                    pot.Type(), pot.Location(), pot.Row(), pot.Col(), 
-                    pot.isReversed(), plant.State(), pot.Requirement(),
-                    pot.WaterCnt(), pot.MaxWaterCnt(), pot.Color()
-                );
-            }
+        APlant * plant = FindPlantOnPot(pot);
+        if (plant) {
+            logger.Info("pot {:d} in: {:d} at: {:d} {:d} reversed: {:d} state: {:d} requires: {:d} water: {:d}/{:d} color: {:d}", 
+                pot.Type(), pot.Location(), pot.Row(), pot.Col(), 
+                pot.isReversed(), plant->State(), pot.Requirement(),
+                pot.WaterCnt(), pot.MaxWaterCnt(), pot.Color()
+            );
+        } else {
+            logger.Info("pot {:d} in: {:d} at: {:d} {:d} reversed: {:d} requires: {:d} water: {:d}/{:d} color: {:d}", 
+            pot.Type(), pot.Location(), pot.Row(), pot.Col(), 
+            pot.isReversed(), pot.Requirement(),
+            pot.WaterCnt(), pot.MaxWaterCnt(), pot.Color()
+        );
         }
     }
     logger.Info("Has music player: {:d}", AHasMusicPlayer());
     logger.Info("Fertilizer: {:d}", AGetFertilizerNum());
     logger.Info("Insecticide: {:d}", AGetInsecticideNum());
     logger.Info("");
+}
+#endif
+
+// 删除ID超出范围的植物
+void RemoveInvalidPots() {
+    int potNum = AGetPotPlantNum();
+    APotPlant * potArray = AGetPotPlantArray();
+    int idx = 0;
+    int legalPotCnt = 0;
+    while (idx < potNum) {
+        APotPlant & pot = potArray[idx];
+        if (pot.HasValidID()) {
+            if (legalPotCnt < idx) {
+                memcpy(potArray + legalPotCnt, potArray + idx, sizeof(APotPlant));
+            }
+            legalPotCnt++;
+            idx++;
+        } else {
+            idx++;
+        }
+    }
+    AGetPotPlantNum() = legalPotCnt;
 }
 
 AutoTool water_can(6, 0);  // 水壶
@@ -589,30 +677,46 @@ ALogger<AConsole> consoleLogger;
 #endif
 
 int selectedPotPlantType = 0;
+int selectedPotPlantColor = 0;
 bool selectedPotIsReversed = false;
 bool userSelected = false;
 
 // 控件 ID
-#define IDC_EDIT_INPUT    101
+#define IDC_EDIT_INPUT1   101
 #define IDC_CHECK_OPTION  102
 #define IDC_BTN_OK        103
 #define IDC_BTN_CANCEL    104
+#define IDC_EDIT_INPUT2   105
+#define IDC_TEXT1         1001
+#define IDC_TEXT2         1002
 
 // 窗口过程
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
         case WM_CREATE: {
-            // 文本
+            // 文本（植物编号）
             CreateWindowExW(0, L"STATIC", L"输入植物编号", 
                 WS_CHILD | WS_VISIBLE | SS_LEFT, 
                 20, 10, 140, 20, 
-                hWnd, (HMENU)1001, __aig.hInstance, NULL);
+                hWnd, (HMENU)IDC_TEXT1, __aig.hInstance, NULL);
 
-            // 创建输入框（编辑框）
+            // 创建输入框（植物编号）
             CreateWindowExW(0, L"EDIT", L"",
                 WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
-                20, 35, 260, 25,
-                hWnd, (HMENU)IDC_EDIT_INPUT, __aig.hInstance, NULL);
+                20, 35, 140, 25,
+                hWnd, (HMENU)IDC_EDIT_INPUT1, __aig.hInstance, NULL);
+            
+            // 文本（颜色）
+            CreateWindowExW(0, L"STATIC", L"颜色代码", 
+                WS_CHILD | WS_VISIBLE | SS_LEFT, 
+                180, 10, 100, 20, 
+                hWnd, (HMENU)IDC_TEXT2, __aig.hInstance, NULL);
+            
+            // 创建输入框（颜色）
+            CreateWindowExW(0, L"EDIT", L"0",
+                WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
+                180, 35, 100, 25,
+                hWnd, (HMENU)IDC_EDIT_INPUT2, __aig.hInstance, NULL);
 
             // 创建复选框
             CreateWindowExW(0, L"BUTTON", L"是否反向？",
@@ -638,10 +742,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             int wmId = LOWORD(wParam);
             switch (wmId) {
                 case IDC_BTN_OK: {
-                    // 获取输入框中的文本
-                    wchar_t buffer[256] = {0};
-                    HWND hEdit = GetDlgItem(hWnd, IDC_EDIT_INPUT);
-                    GetWindowTextW(hEdit, buffer, 256);
+                    // 获取输入框中的文本：植物编号
+                    wchar_t buffer1[256] = {0};
+                    HWND hEdit1 = GetDlgItem(hWnd, IDC_EDIT_INPUT1);
+                    GetWindowTextW(hEdit1, buffer1, 256);
+
+                    // 获取输入框中的文本：颜色
+                    wchar_t buffer2[256] = {0};
+                    HWND hEdit2 = GetDlgItem(hWnd, IDC_EDIT_INPUT2);
+                    GetWindowTextW(hEdit2, buffer2, 256);
 
                     // 获取复选框状态
                     HWND hCheck = GetDlgItem(hWnd, IDC_CHECK_OPTION);
@@ -650,7 +759,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
                     // 获得输入内容
                     selectedPotIsReversed = isChecked;
                     try {
-                        selectedPotPlantType = std::stoi(buffer);
+                        selectedPotPlantType = std::stoi(buffer1);
+                        selectedPotPlantColor = std::stoi(buffer2);
                         userSelected = true;
                     } catch (std::invalid_argument const& ex) {
                         break;
@@ -692,7 +802,7 @@ int ShowPotSelectDialog() {
         wc.hInstance     = __aig.hInstance;
         wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
         wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-        wc.lpszClassName = L"InputDialogClass";
+        wc.lpszClassName = L"AGGivePotDialogClass";
         if (!RegisterClassExW(&wc)) {
             // MessageBoxW(NULL, L"窗口类注册失败！", L"错误", MB_ICONERROR);
             return 0;
@@ -716,7 +826,7 @@ int ShowPotSelectDialog() {
 
     // 创建窗口
     HWND hWnd = CreateWindowExW(
-        0, L"InputDialogClass", L"",
+        0, L"AGGivePotDialogClass", L"",
         WS_OVERLAPPED | WS_CAPTION | WS_VISIBLE | WS_SYSMENU,
         x, y, width, height,
         NULL, NULL, __aig.hInstance, NULL
@@ -736,6 +846,60 @@ int ShowPotSelectDialog() {
     }
     return 1;
 }
+
+// 脚本自动设置盆栽，演示作用。不要在自己主玩存档使用！它会删除所有原有盆栽！
+#ifdef DEBUG
+bool demoWhitePot = false;
+void SetPotPlantForDemo() {
+    static int demoID = 0;
+    const int demoNum = 6;
+    std::vector<int> demoScene = {0, 1, 0, 0, 0, 0};
+    std::vector<std::vector<int>> demoPots = {
+        // 正常可获得盆栽（非蘑菇园）
+        {0, 1, 2, 3, 4, 5, 6, 7, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, -1, 32, 11, 34, 35, 36, 37, 38, 39},
+        // 正常可获得盆栽（蘑菇园）
+        {8, 9, 10, 12, 13, 14, 15, 31},
+        // 正常无法获得，但表现正常，包括所有紫卡，模仿者，两种特殊坚果，花盆等
+        {33, 40, 41, 42, 43, 44, 45, 46, 47, -1, 48, 49, 51, 52, 72, 85, -1, -1, -1, -1, -1, -1, -1, -1, -1, 50, -1, 59},
+        // 都表现为一颗不停开花的小花，但用手套拿会出现僵尸
+        {58, 60, 61, 63, 64, 66, 67, 69, 70, 71, 73, 79},
+        // 不能用手套移动，会崩溃
+        {98, 111, 124, 150, 163, 176, 189, -1, 202, -1, -1, -1, -1, -1, -1, -1, 228, 241, -1, 254, -1, 267},
+    };
+    if (demoID == demoNum - 1) {  // 全不同颜色金盏花变种
+        AGetPotPlantNum() = 0;
+        APotPlant * potArray = AGetPotPlantArray();
+        int potCnt = 0;
+        for (int color = 0; color < 13; color++) {
+            GivePotPlant(38, 0, color);
+            APotPlant & pot = potArray[potCnt];
+            pot.Location() = 0;
+            pot.Row() = potCnt / 8;
+            pot.Col() = potCnt % 8;
+            pot.Age() = 3;
+            potCnt++;
+        }
+    } else {
+        AGetPotPlantNum() = 0;
+        APotPlant * potArray = AGetPotPlantArray();
+        int potCnt = 0;
+        int pos = 0;
+        for (auto potID : demoPots[demoID]) {
+            if (potID >= 0) {
+                GivePotPlant(potID, 0, demoWhitePot);
+                APotPlant & pot = potArray[potCnt];
+                pot.Location() = demoScene[demoID];
+                pot.Row() = pos / 8;
+                pot.Col() = pos % 8;
+                pot.Age() = 3;
+                potCnt++;
+            }
+            pos++;
+        }
+    }
+    demoID = (demoID + 1) % demoNum;
+}
+#endif
 
 void GardenInit() {
     // 脚本开关（按Q）
@@ -759,13 +923,43 @@ void GardenInit() {
         // 显示一个对话框
         int status = ShowPotSelectDialog();
         if (status && userSelected) {
-            GivePotPlant(selectedPotPlantType, selectedPotIsReversed);
+            GivePotPlant(selectedPotPlantType, selectedPotIsReversed, selectedPotPlantColor);
         }
+    }, 0, ATickRunner::AFTER_INJECT);
+    // 所有植物立即长大，你可能需要退出花园然后重进来看到效果
+    AConnect('G', [] () {
+        int potNum = AGetPotPlantNum();
+        APotPlant * potArray = AGetPotPlantArray();
+        for (int i = 0; i < potNum; i++) {
+            APotPlant & pot = potArray[i];
+            pot.Age() = 3;
+        }
+    }, 0, ATickRunner::AFTER_INJECT);
+    // 救救我的存档！如果花园里有无效植物编号的盆栽，进花园游戏会崩溃，这个快捷键能删除这些有问题的植物
+    AConnect('R', [] () {
+        RemoveInvalidPots();
+    }, 0, ATickRunner::AFTER_INJECT);
+    // 画盆栽编号
+    AConnect('I', [] () {
+        plotPotID = !plotPotID;
     }, 0, ATickRunner::AFTER_INJECT);
 #ifdef DEBUG
     // debug print
     AConnect('D', [] () {
         DebugPrintGarden(consoleLogger);
+    }, 0, ATickRunner::AFTER_INJECT);
+    // demo
+    AConnect('T', [] () {
+        SetPotPlantForDemo();
+    }, 0, ATickRunner::AFTER_INJECT);
+    // demo pot color
+    AConnect('W', [] () {
+        demoWhitePot = !demoWhitePot;
+    }, 0, ATickRunner::AFTER_INJECT);
+#else
+    // 不安全模式，此时可以获得任意编号的盆栽，注意不要把游戏玩崩溃了喵。
+    AConnect('U', [] () {
+        unsafeMode = !unsafeMode;
     }, 0, ATickRunner::AFTER_INJECT);
 #endif
 }
@@ -773,7 +967,7 @@ void GardenInit() {
 void GardenFinalize() {
     // 这个是避免再次注入时，由于窗口类已经注册，导致无法弹出窗口
     if (winClassRegistered) {
-        UnregisterClassW(L"InputDialogClass", __aig.hInstance);
+        UnregisterClassW(L"AGGivePotDialogClass", __aig.hInstance);
     }
 }
 
@@ -798,11 +992,15 @@ void Garden() {
         prev_scene = scene;
     }
 
-    garden_cooldown.Start();
-    water_can.Start();
-    music_player.Start();
-    fertilizer.Start();
-    insecticide.Start();
+    // 在商店时暂时停止
+    bool inShop = InShop();
+    if (!inShop) {
+        garden_cooldown.Start();
+        water_can.Start();
+        music_player.Start();
+        fertilizer.Start();
+        insecticide.Start();
+    }
 
     // 画一行字告诉你脚本开关状态
     if (water_can.enabled) {
@@ -810,7 +1008,15 @@ void Garden() {
     } else {
         MyDraw(AText("AutoGarden off", 10, 570), 1, 0.0);
     }
-    
+    // 红色警告：调试模式，以及不安全模式！
+#ifdef DEBUG
+    MyDraw(AText("DEBUG MODE", 320, 570), 1, 0.0, AArgb(0xff, 0xff, 0x00, 0x00));
+#else
+    if (unsafeMode) {
+        MyDraw(AText("UNSAFE MODE", 320, 570), 1, 0.0, AArgb(0xff, 0xff, 0x00, 0x00));
+    }
+#endif
+
     // 一些游戏内数据
     int potNum = AGetPotPlantNum();
     APotPlant * potArray = AGetPotPlantArray();
@@ -819,9 +1025,19 @@ void Garden() {
     for (int i = 0; i < potNum; i++) {
         APotPlant & pot = potArray[i];
         if (PotPlantLocationMatch(pot, scene)) {
-            // find corresponding plant. 必须是活的植物，否则会出错，表现为盆栽处于苗状态（age=0），浇水、施肥到age=1时，会不停施肥
-            for (auto & plant : aAlivePlantFilter) {
-                if (plant.Type() != AHP_33 && plant.Row() == pot.Row() && plant.Col() == pot.Col() && !plant.IsSleeping() && garden_cooldown.GetCoolDown(pot.Row(), pot.Col()) == 0) {
+            // 找到对应的植物
+            APlant * plant_ptr = FindPlantOnPot(pot);
+            if (plant_ptr) {
+                APlant & plant = *plant_ptr;
+                if (plotPotID && !inShop) {
+                    // 对于金盏花，额外输出颜色代码
+                    if (pot.Type() == 38) {
+                        MyDraw(AText(std::to_string(pot.Type()) + "," + std::to_string(pot.Color()), plant.Abscissa(), plant.Ordinate()), 1, 0.0);
+                    } else {
+                        MyDraw(AText(std::to_string(pot.Type()), plant.Abscissa(), plant.Ordinate()), 1, 0.0);
+                    }
+                }
+                if (!plant.IsSleeping() && garden_cooldown.GetCoolDown(pot.Row(), pot.Col()) == 0) {
                     // 坐标
                     int xi = plant.Abscissa() + plant.HurtWidth() / 2;
                     int yi = plant.Ordinate() + plant.HurtHeight() / 2;
