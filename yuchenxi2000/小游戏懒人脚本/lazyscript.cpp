@@ -1,5 +1,9 @@
 // 小游戏懒人合集 by yuchenxi2000
-// 包含锤僵尸、宝石迷阵、宝石迷阵转转看
+// 包含锤僵尸、宝石迷阵、宝石迷阵转转看、隐形食脑者
+// 使用AvZ版本260224进行开发，其他版本不保证兼容性
+//
+// 致谢：
+// 隐形食脑者的逆向过程中参考了该项目 https://github.com/ruslan831/PlantsVsZombies-decompilation
 #include <avz.h>
 #include <utility>
 #include <algorithm>
@@ -268,6 +272,27 @@ ATickRunner beghouled_runner;
 ATickRunner twist_runner;
 ATickRunner upgrade_runner;
 AItemCollectorFixed aItemCollectorFixed;
+
+// 隐形食脑者僵尸显形
+DWORD addr_drawzombie = 0x52E357;
+DWORD addr_drawshadow = 0x53402B;
+
+void InstallGhoulHook() {
+    // 0x52E357: jmp 0x52E35F
+    *(char *)addr_drawzombie = '\xEB';
+    // 0x53402B: jmp 0x534033
+    *(char *)addr_drawshadow = '\xEB';
+}
+
+void UninstallGhoulHook() {
+    // 0x52E357: jne 0x52E35F
+    *(char *)addr_drawzombie = '\x75';
+    // 0x53402B: jne 0x534033
+    *(char *)addr_drawshadow = '\x75';
+}
+
+AOnAfterInject(InstallGhoulHook());
+AOnBeforeExit(UninstallGhoulHook());
 
 void AScript() {
     ASetReloadMode(AReloadMode::MAIN_UI_OR_FIGHT_UI);
