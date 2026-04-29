@@ -776,17 +776,39 @@ bool InGarden() {
 class AGardenItemCollector : public AItemCollector, AOrderedAfterInjectHook<-1> {
 public:
     void _Run() {
-        if (InGarden() && AutoTool::lock == 0) {
-            // 鼠标在返回按钮上的时候不要收集，不然崩给你看
-            // 目前发现还是有概率会崩，貌似和自动收集的内部实现有关系。
-            // 正常关卡点击返回按钮时跳出一个弹窗，所以不会崩；但是花园里直接返回主界面，这是可能导致崩溃的原因。
-            // 后面再想办法解决
-            int curX = AGetPvzBase()->MouseWindow()->MouseAbscissa();
-            int curY = AGetPvzBase()->MouseWindow()->MouseOrdinate();
-            if (curY <= 36 && curX >= 627 && curX <= 791) {
-                return;
+        if (!InGarden() || AutoTool::lock != 0) {
+            return;
+        }
+        // 原物品收集类实现有bug。如果在花园内，ALeftClick后，会立刻返回主界面，此时MainObject被删除；
+        // 但是后面一句ReleaseMouse的参数是MainObject，此时是空指针，引起游戏崩溃。
+        // 至于为什么直到现在没有发现这个bug，一是AvZ默认不允许自动收集在禅境花园运行；二是普通关卡点击返回按钮会跳出弹窗，而不是直接返回主界面。
+        // AItemCollector::_Run();
+        if (AGetMainObject()->GameClock() % _timeInterval != 0 || //
+            AGetMainObject()->MouseAttribution()->Type() != 0)
+            return;
+
+        AItem* collectItem = nullptr;
+        for (auto& item : aAliveItemFilter) {
+            if (!_types[item.Type()])
+                continue;
+            collectItem = &item;
+            if (ARangeIn(item.Type(), {4, 5, 6})) // 优先采集阳光
+                break;
+        }
+        if (!collectItem) // 没有要收集的物品
+            return;
+
+        float itemX = collectItem->Abscissa();
+        float itemY = collectItem->Ordinate();
+        if (itemX >= 0.0 && itemY >= 70) {
+            AAsm::ReleaseMouse();
+            int x = static_cast<int>(itemX + 30);
+            int y = static_cast<int>(itemY + 30);
+            ALeftClick(x, y);
+            // FIX: 判断是否空指针，否则会导致游戏崩溃
+            if (AGetMainObject()) {
+                AAsm::ReleaseMouse();
             }
-            AItemCollector::_Run();
         }
     }
     void Start() {
